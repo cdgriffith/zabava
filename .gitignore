@@ -61,3 +61,7 @@ typings/
 .next
 
 .idea/
+
+public/*/video*
+public/*/bootstrap*
+public/*/jquery*

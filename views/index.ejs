@@ -1,9 +1,13 @@
 <html>
 <head>
-
+    <link href="/stylesheets/style.css" rel="stylesheet">
 </head>
 <body>
-  <%= title %>
+<ul>
+  <% for(var i=0; i<files.length; i++) {%>
+    <li><a href="/video/<%= files[i].fileId %>" ><%= files[i].fileName %></a> </li>
+  <% } %>
+</ul>
 
 </body>
 </html>

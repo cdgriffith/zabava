@@ -1,0 +1,15 @@
+<% include header.ejs %>
+
+
+<div class="container-fluid">
+    <div class="row">
+                <% for(let folder of folders) {%>
+                    <div class="cover">
+                        <img class="cover" src="<%= folder.cover %>" />
+                    </div>
+                <% } %>
+    </div>
+</div>
+
+
+<% include footer.ejs %>
