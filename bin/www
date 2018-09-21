@@ -7,6 +7,7 @@
 let app = require('../app')
 let debug = require('debug')('blaze-player:server')
 let http = require('http')
+let db = require('../lib/db')
 
 /**
  * Get port from environment and store in Express.
@@ -25,7 +26,13 @@ let server = http.createServer(app)
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port)
+db()
+  .then(_ => server.listen(port))
+  .catch( err => {
+    console.error(err)
+    process.exit(1)
+})
+
 server.on('error', onError)
 server.on('listening', onListening)
 

@@ -6,6 +6,12 @@ let cookieParser = require('cookie-parser')
 let logger = require('morgan')
 let jwt = require('express-jwt')
 let indexRouter = require('./routes/index')
+const winston = require('winston')
+
+const console = new winston.transports.Console()
+
+winston.add(console)
+winston.level = process.env.LOG_LEVEL || 'debug'
 
 let app = express()
 

@@ -12,19 +12,23 @@ Media is MPEG-DASH Encrypted (AES128)
 Data will be stored on remote server like: 
 
     bucket/
-        0000001/
-            cover.jpg
-            stream.mpd
-            audio/<lang>/<type>/
-                init.mp4
-                seg-1.m4s 
-                ...
-            video/<type>/
-                init.mp4
-                seg-1.m4s 
-                ...
-        0000002/
-        ...
+        covers/ 
+            0000001
+            0000002
+            ...
+        mpeg_dash/
+            0000001/
+                stream.mpd
+                audio/<lang>/<type>/
+                    init.mp4
+                    seg-1.m4s 
+                    ...
+                video/<type>/
+                    init.mp4
+                    seg-1.m4s 
+                    ...
+            0000002/
+            ...
             
             
 Info about the files will be stored in a locally encrypted Mongo Database

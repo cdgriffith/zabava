@@ -1,10 +1,11 @@
 let express = require('express')
 let router = express.Router()
-let {Backblaze} = require('../lib/backblaze')
+let {Backblaze} = require('../lib/providers/backblaze')
 let {generateToken} = require('../lib/auth')
-let {getFolders} = require('../lib/storage')
+let {getFolders, getProvider} = require('../lib/storage')
+let request = require('request')
 
-const bb = new Backblaze(process.env.B2_ACCOUNT_ID, process.env.B2_TOKEN_ID, process.env.B2_TOKEN)
+const provider = new getProvider()(process.env.B2_ACCOUNT_ID, process.env.B2_TOKEN_ID, process.env.B2_TOKEN, process.env.B2_BUCKET)
 
 
 router.get('/', async function (req, res, next) {
@@ -15,9 +16,11 @@ router.post('/', async function (req, res, next) {
   res.redirect('/video')
 })
 
-router.get('/asset:id', async function (req, res) {
-  let videoId = req.params.id
+router.get('/asset/:id/*', async function (req, res) {
+  let contentId = req.params.id
+  let path = req.params[0]
 
+  request(await provider.streamUrl(contentId + "/" + path, false), {'Authorization': provider.authToken}).pipe(res)
 
 })
 
@@ -25,7 +28,7 @@ router.get('/asset:id', async function (req, res) {
 router.get('/folder/:folder', async function (req, res, next) {
   let bucketId, files
   try {
-    bucketId = await bb.findBucket('griff-test')
+    bucketId = await bb._findBucketId('griff-test')
     files = await bb.listFiles(bucketId)
   } catch (err){
     console.log(err)
@@ -44,7 +47,7 @@ router.get('/folder/:folder', async function (req, res, next) {
 router.get('/video', async function (req, res, next) {
   let bucketId, files
   try {
-    bucketId = await bb.findBucket('griff-test')
+    bucketId = await bb._findBucketId('griff-test')
     files = await bb.listFiles(bucketId)
   } catch (err){
     console.log(err)
@@ -60,13 +63,7 @@ router.get('/video', async function (req, res, next) {
 })
 
 router.get('/video/:id', async function (req, res, next) {
-  await bb.ensureAuth()
-  let bucketId = await bb.findBucket(process.env.B2_BUCKET)
-  let filename = await bb.findFileName(bucketId, req.params.id)
-  if (!filename){
-    throw Error('No file found')
-  }
-  res.render('video_viewer', {src: bb.downloadFileNameUrl(process.env.B2_BUCKET, filename)})
+  res.render('video_viewer', {assetId: req.params.id})
 })
 
 

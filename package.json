@@ -15,14 +15,19 @@
     "ejs": "^2.6.1",
     "express": "~4.16.0",
     "express-jwt": "^5.3.1",
+    "hash-files": "^1.1.1",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "jquery": "^3.3.1",
     "jsonwebtoken": "latest",
+    "mime-types": "latest",
+    "mongoose": "^5.2.16",
+    "mongoose-encryption": "^2.0.1",
     "morgan": "~1.9.0",
     "popper": "^1.0.1",
+    "request": "latest",
     "shaka-player": "^2.5.0-beta",
-    "video.js": "^7.2.2"
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
