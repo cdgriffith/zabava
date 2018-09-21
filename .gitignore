@@ -65,3 +65,5 @@ typings/
 public/*/video*
 public/*/bootstrap*
 public/*/jquery*
+public/*/shaka*
+output/

@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "build": "gulp"
   },
   "dependencies": {
     "axios": "latest",
@@ -20,9 +21,11 @@
     "jsonwebtoken": "latest",
     "morgan": "~1.9.0",
     "popper": "^1.0.1",
+    "shaka-player": "^2.5.0-beta",
     "video.js": "^7.2.2"
   },
   "devDependencies": {
-    "gulp": "^3.9.1"
+    "gulp": "^3.9.1",
+    "mocha": "^5.2.0"
   }
 }

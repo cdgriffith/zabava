@@ -4,7 +4,7 @@ let {Backblaze} = require('../lib/backblaze')
 let {generateToken} = require('../lib/auth')
 let {getFolders} = require('../lib/storage')
 
-const bb = new Backblaze(process.env.B2_ACCOUNT_ID, process.env.B2ID, process.env.B2KEY)
+const bb = new Backblaze(process.env.B2_ACCOUNT_ID, process.env.B2_TOKEN_ID, process.env.B2_TOKEN)
 
 
 router.get('/', async function (req, res, next) {
@@ -12,10 +12,13 @@ router.get('/', async function (req, res, next) {
 })
 
 router.post('/', async function (req, res, next) {
-
-
-
   res.redirect('/video')
+})
+
+router.get('/asset:id', async function (req, res) {
+  let videoId = req.params.id
+
+
 })
 
 
