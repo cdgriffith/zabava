@@ -2,12 +2,13 @@
 
 
 <video id="video" width="640" controls autoplay></video>
+<div id="info"></div>
 
 <script src="/javascript/shaka-player.compiled.debug.js" type="application/javascript"></script>
 <script>
   // myapp.js
 
-  var manifestUri = '/asset/<%= assetId %>/stream.mpd';
+  var manifestUri = '/asset/mpeg_dash/<%= assetId %>/stream.mpd';
 
   function initApp () {
     // Install built-in polyfills to patch browser incompatibilities.
@@ -54,6 +55,8 @@
     player.load(manifestUri).then(function () {
       // This runs if the asynchronous load is successful.
       console.log('The video has now been loaded!');
+      info.innerHTML = JSON.stringify(player.getVariantTracks());
+      //selectVariantTrack
     }).catch(onError);  // onError is executed if the asynchronous load fails.
   }
 

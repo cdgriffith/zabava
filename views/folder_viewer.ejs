@@ -5,7 +5,7 @@
     <div class="row">
                 <% for(let folder of folders) {%>
                     <div class="cover">
-                        <img class="cover" src="<%= folder.cover %>" />
+                        <a href="/video/<%= folder.media_id %>" target="_blank"  > <img class="cover" src="<%= folder.cover %>" /></a>
                     </div>
                 <% } %>
     </div>
