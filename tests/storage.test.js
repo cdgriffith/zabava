@@ -23,8 +23,8 @@ describe('storage', () => {
   })
 
   it('should be able to upload a file to backblaze', async () => {
-    let b2 = new Backblaze(process.env.B2_ACCOUNT_ID, process.env.B2_TOKEN_ID,
-      process.env.B2_TOKEN, process.env.B2_BUCKET)
+    let b2 = new Backblaze(process.env.STORAGE_ACCOUNT_ID, process.env.STORAGE_TOKEN_ID,
+      process.env.STORAGE_TOKEN, process.env.STORAGE_BUCKET_NAME)
 
     console.log(await b2.uploadFile(__dirname + '/test.txt', 'folder/folder2/test.txt'))
 

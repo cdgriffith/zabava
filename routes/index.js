@@ -5,7 +5,7 @@ let {generateToken} = require('../lib/auth')
 let {getFolders, getProvider} = require('../lib/storage')
 let request = require('request')
 
-const provider = new getProvider()(process.env.B2_ACCOUNT_ID, process.env.B2_TOKEN_ID, process.env.B2_TOKEN, process.env.B2_BUCKET)
+const provider = new getProvider()()
 
 
 router.get('/', async function (req, res, next) {
@@ -38,7 +38,7 @@ router.get('/folder/:folder', async function (req, res, next) {
   let folders = []
 
   folderNames.forEach(folder => {
-    folders.push({name: folder, cover: bb.downloadFileNameUrl(process.env.B2_BUCKET, `${req.params.folder}/${folder}/cover.jpg`)})
+    folders.push({name: folder, cover: bb.downloadFileNameUrl(process.env.STORAGE_BUCKET_NAME, `${req.params.folder}/${folder}/cover.jpg`)})
   })
 
   res.render('folder_viewer', {base: req.params.folder, folders: folders})

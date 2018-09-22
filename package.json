@@ -27,7 +27,8 @@
     "popper": "^1.0.1",
     "request": "latest",
     "shaka-player": "^2.5.0-beta",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "uuid": "latest"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

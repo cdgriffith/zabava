@@ -39,6 +39,7 @@ Info about the files will be stored in a locally encrypted Mongo Database
     media_type: string  # (video / tv show/ audio?)
     series: string
     seasion: number
+    auto_play_series: boolean
     episode: number
     encryption: {key_id: secret_key} #diff for audio?
     genres: []
