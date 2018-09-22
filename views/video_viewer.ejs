@@ -3,11 +3,11 @@
 
 <video id="video" width="640" controls autoplay></video>
 
-<script src="/public/javascript/shaka-player.compiled.debug.js" type="application/javascript"></script>
+<script src="/javascript/shaka-player.compiled.debug.js" type="application/javascript"></script>
 <script>
   // myapp.js
 
-  var manifestUri = '/asset/<%= assetId %>}/stream.mpd';
+  var manifestUri = '/asset/<%= assetId %>/stream.mpd';
 
   function initApp () {
     // Install built-in polyfills to patch browser incompatibilities.
@@ -30,8 +30,7 @@
     player.configure({
         drm: {
           clearKeys: {
-            '11111111111111111111111111111111': '11111111111111111111111111111111',
-            '21111111111111111111111111111111': '11111111111111111111111111111112'
+            '<%= key_id %>': '<%= key %>'
           }
         },
         preferredTextLanguage: 'en',

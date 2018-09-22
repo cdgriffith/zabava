@@ -1,4 +1,4 @@
-# blaze-player
+# blaze-player | Zabava
 
 **Very messy work in progress! Still flushing out ideas!**
 

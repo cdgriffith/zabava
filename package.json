@@ -15,6 +15,7 @@
     "ejs": "^2.6.1",
     "express": "~4.16.0",
     "express-jwt": "^5.3.1",
+    "fs-extra": "^7.0.0",
     "hash-files": "^1.1.1",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
@@ -27,8 +28,8 @@
     "popper": "^1.0.1",
     "request": "latest",
     "shaka-player": "^2.5.0-beta",
-    "winston": "^3.1.0",
-    "uuid": "latest"
+    "uuid": "latest",
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

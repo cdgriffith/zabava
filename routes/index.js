@@ -1,31 +1,31 @@
-let express = require('express')
-let router = express.Router()
-let {Backblaze} = require('../lib/providers/backblaze')
-let {generateToken} = require('../lib/auth')
-let {getFolders, getProvider} = require('../lib/storage')
-let request = require('request')
+const express = require('express')
+const router = express.Router()
+const {generateToken} = require('../lib/auth')
+const {getProvider} = require('../lib/storage')
+const request = require('request')
+const Asset = require('../lib/models/asset')()
 
-const provider = new getProvider()()
+const provider = getProvider()
+const storage = new provider()
 
 
-router.get('/', async function (req, res, next) {
+router.get('/', async function (req, res) {
   res.cookie('token', await generateToken('test'), {maxAge: 24 * 60 * 60 * 1000, httpOnly: true, signed: true}).render('login')
 })
 
-router.post('/', async function (req, res, next) {
+router.post('/', async function (req, res) {
   res.redirect('/video')
 })
 
 router.get('/asset/:id/*', async function (req, res) {
   let contentId = req.params.id
-  let path = req.params[0]
+  let filePath = req.params[0]
 
-  request(await provider.streamUrl(contentId + "/" + path, false), {'Authorization': provider.authToken}).pipe(res)
-
+  request(await storage.streamUrl(`mpeg_dash/${contentId}/${filePath}`, false), {headers: {Authorization: storage.authToken}}).pipe(res)
 })
 
 
-router.get('/folder/:folder', async function (req, res, next) {
+router.get('/folder/:folder', async function (req, res) {
   let bucketId, files
   try {
     bucketId = await bb._findBucketId('griff-test')
@@ -44,7 +44,7 @@ router.get('/folder/:folder', async function (req, res, next) {
   res.render('folder_viewer', {base: req.params.folder, folders: folders})
 })
 
-router.get('/video', async function (req, res, next) {
+router.get('/video', async function (req, res) {
   let bucketId, files
   try {
     bucketId = await bb._findBucketId('griff-test')
@@ -63,7 +63,8 @@ router.get('/video', async function (req, res, next) {
 })
 
 router.get('/video/:id', async function (req, res, next) {
-  res.render('video_viewer', {assetId: req.params.id})
+  let record = await Asset.findOne({media_id: req.params.id})
+  res.render('video_viewer', {assetId: req.params.id, ...record.encryption})
 })
 
 
