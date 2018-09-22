@@ -57,7 +57,7 @@ router.get('/folder/:folder', async function (req, res) {
 
 router.get('/video/:id', async function (req, res, next) {
   let record = await Asset.findOne({media_id: req.params.id})
-  res.render('video_viewer', {assetId: req.params.id, ...record.encryption})
+  res.render('video_viewer', record)
 })
 
 
