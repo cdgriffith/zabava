@@ -9,7 +9,10 @@ const {log} = require('winston')
 
 const provider = getProvider()
 const storage = new provider()
-
+storage.auth().catch(err => {
+  log('error', `Could not authenticate to storage provider: ${err}`)
+  process.exit(1)
+})
 
 router.get('/', async function (req, res) {
   res.cookie('token', await generateToken('test'), {

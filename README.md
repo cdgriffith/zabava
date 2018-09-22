@@ -2,6 +2,29 @@
 
 **Very messy work in progress! Still flushing out ideas!**
 
+## CLI 
+
+```
+$ node lib\cli.js
+
+Usage: cli [options] [command]
+
+Zabava - Manage media files
+
+Options:
+
+  -v, --version                 output the version number
+  -h, --help                    output usage information
+
+Commands:
+
+  upload [options] <movieFile>  Upload, convert, and auto encrypt new media file
+  delete <mediaName>            Remove an item
+  list                          View list of movies
+
+```
+
+
 ## Design
 
 All files are encrypted. 
