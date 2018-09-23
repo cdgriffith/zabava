@@ -6,7 +6,7 @@
     "build": "gulp"
   },
   "bin": {
-    "zabava": "./lib/cli.js"
+    "zabava": "./lib/zabava.js"
   },
   "dependencies": {
     "axios": "latest",
@@ -45,5 +45,8 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/cdgriffith/zabava.git"
-  }
+  },
+  "keywords": [],
+  "author": "Chris Griffith",
+  "license": "MIT"
 }

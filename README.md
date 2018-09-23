@@ -1,8 +1,14 @@
 # Zabava
 
-Very private home media player for the cloud
-
 **Very messy work in progress! Still flushing out ideas!**
+
+
+Very private home media player for the cloud. 
+Uses Encrypted MPEG-DASH videos, and even cover images are stored in AES-256.
+
+## Supported Storage Providers 
+
+* Backblaze B2
 
 ## CLI 
 
@@ -25,6 +31,15 @@ Commands:
   list                          View list of movies
 
 ```
+
+
+## Server
+
+```
+npm start
+```
+
+Navigate to localhost:3000 
 
 
 ## Design
