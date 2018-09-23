@@ -51,7 +51,7 @@ router.get('/folder/:folder', async function (req, res) {
   let records = await Asset.find({media_type: req.params.folder.trim()})
   let files = []
   for (let file of records){
-    files.push({cover: `/asset/covers/${file.media_id}`, media_id: file.media_id})
+    files.push({cover: `/asset/covers/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
   }
 
   res.render('folder_viewer', {base: req.params.folder, folders: files})

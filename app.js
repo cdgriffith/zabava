@@ -3,14 +3,24 @@ let createError = require('http-errors')
 let express = require('express')
 let path = require('path')
 let cookieParser = require('cookie-parser')
-let logger = require('morgan')
+let morgan = require('morgan')
 let jwt = require('express-jwt')
 let indexRouter = require('./routes/index')
 const winston = require('winston')
 
-const console = new winston.transports.Console()
-winston.add(console)
+winston.add(new winston.transports.Console({
+  format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple()
+  )
+}))
 winston.level = process.env.LOG_LEVEL || 'debug'
+
+winston.stream = {
+  write: function (message, encoding) {
+    winston.info(message)
+  }
+}
 
 let app = express()
 
@@ -18,15 +28,15 @@ let app = express()
 app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
-app.use(logger('dev'))
+app.use(morgan('combined', {stream: winston.stream}))
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(cookieParser(process.env.COOKIE_SECRET))
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(jwt({
   secret: process.env.JWT_SECRET,
-  getToken: function fromHeaderOrQuerystring (req) {
-    if (req.signedCookies.token){
+  getToken: function fromHeaderOrQuerystring(req) {
+    if (req.signedCookies.token) {
       return req.signedCookies.token
     }
     else if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {

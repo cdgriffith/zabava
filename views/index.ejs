@@ -4,8 +4,8 @@
 </head>
 <body>
 <ul>
-  <% for(var i=0; i<files.length; i++) {%>
-    <li><a href="/video/<%= files[i].fileId %>" ><%= files[i].fileName %></a> </li>
+  <% for(let file of files) {%>
+    <li><a href="/video/<%= file.fileId %>" title="<%= file.media_name %>" ></a> </li>
   <% } %>
 </ul>
 
