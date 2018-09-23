@@ -1,12 +1,14 @@
 require('dotenv').config()
-let createError = require('http-errors')
-let express = require('express')
-let path = require('path')
-let cookieParser = require('cookie-parser')
-let morgan = require('morgan')
-let jwt = require('express-jwt')
-let indexRouter = require('./routes/index')
+const createError = require('http-errors')
+const express = require('express')
+const path = require('path')
+const cookieParser = require('cookie-parser')
+const morgan = require('morgan')
+const jwt = require('express-jwt')
 const winston = require('winston')
+
+const indexRouter = require('./routes/index')
+const apiRouter = require('./routes/api')
 
 winston.add(new winston.transports.Console({
   format: winston.format.combine(
@@ -49,6 +51,7 @@ app.use(jwt({
 }).unless({path: ['/']}))
 
 app.use('/', indexRouter)
+app.use('/api', apiRouter)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
