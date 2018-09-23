@@ -1,10 +1,12 @@
 {
-  "name": "blaze-player",
-  "version": "1.0.0",
-  "private": true,
+  "name": "zabava",
+  "version": "0.0.1",
   "scripts": {
     "start": "node ./bin/www",
     "build": "gulp"
+  },
+  "bin": {
+    "zabava": "./lib/cli.js"
   },
   "dependencies": {
     "axios": "latest",
@@ -38,5 +40,10 @@
   "devDependencies": {
     "gulp": "^3.9.1",
     "mocha": "^5.2.0"
+  },
+  "homepage": "https://github.com/cdgriffith/zabava",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cdgriffith/zabava.git"
   }
 }

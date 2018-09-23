@@ -1,4 +1,6 @@
-# blaze-player | Zabava
+# Zabava
+
+Very private home media player for the cloud
 
 **Very messy work in progress! Still flushing out ideas!**
 
