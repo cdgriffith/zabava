@@ -2,28 +2,62 @@
 
 
 <video id="video" width="640" controls autoplay>
-  <% for (let subs of subtitles || []) { %>
-  <track label="English" kind="subtitles" srclang="<%= subs.language %>" src="/asset/<%= subs.file %>?stream=false&type=text/plain" >
-  <% } %>
+    <% for (let subs of subtitles || []) { %>
+        <track label="English" kind="subtitles" srclang="<%= subs.language %>"
+               src="/asset/<%= subs.file %>?stream=false&type=text/plain">
+    <% } %>
 
 </video>
 <div id="info">
+    <table class="table">
+        <tbody>
+        <tr>
+            <th scope="row">Name</th>
+            <td><%= media_name %></td>
 
-  Name: <%= media_name  %>
-  Size: <%= size || 'unknown' %>
+        </tr>
+        <tr>
+            <th scope="row"><label for="track-select"> Language</label></th>
+            <td><select id="track-select" name="track" onchange="setTrack()"></select></td>
 
+        </tr>
+        <tr>
+            <th scope="row">Size</th>
+            <td><%= size || 'unknown' %></td>
+        </tr>
+        <% if (series) { %>
+            <tr>
+                <th scope="row">Series</th>
+                <td><%= series %></td>
+            </tr>
+        <% } %>
+        <% if (season) { %>
+            <tr>
+                <th scope="row">Season</th>
+                <td><%= season %></td>
+            </tr>
+        <% } %>
+        <% if (episode) { %>
+            <tr>
+                <th scope="row">Episode</th>
+                <td><%= episode %></td>
+            </tr>
+        <% } %>
+
+        </tbody>
+    </table>
 </div>
-<div id="tracks"></div>
 
 <script src="/javascript/jquery.min.js" type="application/javascript"></script>
 <script src="/javascript/shaka-player.compiled.debug.js" type="application/javascript"></script>
+
 <script>
-  // myapp.js
 
-  var manifestUri = '/asset/<%= media_id %>/stream.mpd?stream=true';
+  let manifestUri = '/asset/<%= media_id %>/stream.mpd?stream=true'
+  let player
+  let availableTracks = []
 
-
-  function initApp () {
+  function initApp() {
     shaka.polyfill.installAll()
 
     if (shaka.Player.isBrowserSupported()) {
@@ -34,52 +68,63 @@
     }
   }
 
-  function initPlayer () {
-    // Create a Player instance.
-    var video = document.getElementById('video')
-    var player = new shaka.Player(video)
+  function initPlayer() {
+    let video = document.getElementById('video')
+    player = new shaka.Player(video)
     player.configure({
-        drm: {
-          clearKeys: {
-            '<%= encryption.key_id %>': '<%= encryption.key %>'
+          drm: {
+            clearKeys: {
+              '<%= encryption.key_id %>': '<%= encryption.key %>'
+            }
+          },
+          preferredAudioLanguage: 'eng',
+          preferredTextLanguage: 'eng',
+          streaming: {
+            bufferingGoal: 120
           }
-        },
-      preferredAudioLanguage: 'eng',
-        preferredTextLanguage: 'eng',
-        streaming: {
-          bufferingGoal: 120
+        }
+    )
+    window.player = player
+
+    player.addEventListener('error', onErrorEvent)
+    player.addEventListener('ended', onEnded)
+
+    player.load(manifestUri).then(function () {
+      availableTracks = player.getVariantTracks()
+      for (let [index, track] of availableTracks.entries()) {
+        if (track.width) {
+          $('#track-select').append($('<option>', {value: index, text: track.language}))
         }
       }
-    );
-
-    // Attach player to the window to make it easy to access in the JS console.
-    window.player = player;
-
-    // Listen for error events.
-    player.addEventListener('error', onErrorEvent);
-
-    // Try to load a manifest.
-    // This is an asynchronous process.
-    player.load(manifestUri).then(function () {
-      // This runs if the asynchronous load is successful.
-      console.log('The video has now been loaded!');
-      tracks.innerHTML = JSON.stringify(player.getVariantTracks());
-      //selectVariantTrack
-    }).catch(onError);  // onError is executed if the asynchronous load fails.
+    }).catch(onError)
   }
 
-  function onErrorEvent (event) {
+  function setTrack() {
+    player.configure({abr: {enabled: false}})
+    let trackNumber = parseInt($('#track-select').val())
+    console.log(trackNumber)
+    let selector = availableTracks[trackNumber]
+    console.log(selector)
+    player.selectVariantTrack(selector, true)
+  }
+
+
+  function onEnded(event) {
+    // autoplay next if needed
+  }
+
+  function onErrorEvent(event) {
     // Extract the shaka.util.Error object from the event.
-    onError(event.detail);
+    onError(event.detail)
   }
 
-  function onError (error) {
+  function onError(error) {
     // Log the error.
     // TODO print this on page
-    console.error('Error code', error.code, 'object', error);
+    console.error('Error code', error.code, 'object', error)
   }
 
-  document.addEventListener('DOMContentLoaded', initApp);
+  document.addEventListener('DOMContentLoaded', initApp)
 
 </script>
 

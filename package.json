@@ -32,10 +32,11 @@
     "morgan": "~1.9.0",
     "popper": "^1.0.1",
     "request": "latest",
-    "shaka-player": "^2.5.0-beta",
+    "shaka-player": "2.5.0-beta",
     "sharp": "^0.20.8",
     "uuid": "latest",
-    "winston": "^3.1.0"
+    "winston": "^3.1.0",
+    "prettysize": "latest"
   },
   "devDependencies": {
     "gulp": "^3.9.1",

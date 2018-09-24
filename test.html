@@ -8,29 +8,24 @@
 <body>
 <video id="video"
        width="640"
-       controls autoplay></video>
+       controls autoplay>
+    <!--<track label="English" kind="subtitles" srclang="eng" src="/darkroom_timer.vtt" type="text/vtt" >-->
+
+</video>
 
 <script>
-  // myapp.js
-
-  var manifestUri = 'https://f002.backblazeb2.com/file/griff-test/mpeg_dash/f4377148-18e9-47e8-8a6a-31097d49808a/stream.mpd';
+  var manifestUri = '/output/stream.mpd';
 
   function initApp() {
-    // Install built-in polyfills to patch browser incompatibilities.
     shaka.polyfill.installAll();
-
-    // Check to see if the browser supports the basic APIs Shaka needs.
     if (shaka.Player.isBrowserSupported()) {
-      // Everything looks good!
       initPlayer();
     } else {
-      // This browser does not have the minimum set of APIs we need.
       console.error('Browser not supported!');
     }
   }
 
   function initPlayer() {
-    // Create a Player instance.
     var video = document.getElementById('video');
     var player = new shaka.Player(video);
     player.configure({
@@ -40,33 +35,32 @@
               '1b4b47337574fd54643e3be3f92516e0': '83e87d92b5a737f8a5a25725f74f0bf7'
             }
           },
-          preferredTextLanguage: 'en',
+          preferredTextLanguage: 'eng',
+          preferredAudioLanguage: 'eng',
           streaming: {
             bufferingGoal: 120
           }
         }
     );
-    // Attach player to the window to make it easy to access in the JS console.
     window.player = player;
-
-    // Listen for error events.
     player.addEventListener('error', onErrorEvent);
-
-    // Try to load a manifest.
-    // This is an asynchronous process.
     player.load(manifestUri).then(function() {
-      // This runs if the asynchronous load is successful.
-      console.log('The video has now been loaded!');
-    }).catch(onError);  // onError is executed if the asynchronous load fails.
+        player.addTextTrack('/darkroom_timer.vtt', 'eng', 'subtitle', 'text').then(
+            track => {console.log(track)
+            console.log(player.getTextTracks())
+              player.selectTextTrack(track)
+            }
+        )
+
+        console.log('The video has now been loaded!');
+    }).catch(onError);
   }
 
   function onErrorEvent(event) {
-    // Extract the shaka.util.Error object from the event.
     onError(event.detail);
   }
 
   function onError(error) {
-    // Log the error.
     console.error('Error code', error.code, 'object', error);
   }
 

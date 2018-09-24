@@ -6,6 +6,7 @@ const request = require('request')
 const Asset = require('../lib/models/asset')()
 const {decrypt} = require('../lib/encryption')
 const {log} = require('winston')
+const prettysize = require('prettysize')
 
 const provider = getProvider()
 const storage = new provider()
@@ -40,7 +41,6 @@ router.get('/asset/:id/*', async function (req, res) {
   let filePath = req.params[0]
   let stream = req.query.stream || 'true'
   let contentType = req.query.type || 'image/jpeg'
-  log('debug', contentType)
   if (stream.toLowerCase() === 'true'){
     request(await storage.streamUrl(`${contentId}/${filePath}`, false),
         {headers: {Authorization: storage.authToken}}).pipe(res)
@@ -49,7 +49,6 @@ router.get('/asset/:id/*', async function (req, res) {
     if (!data){
       return res.status(404).end()
     }
-    log('debug', contentType.startsWith('text') ? 'utf8' : 'binary')
     res.contentType(contentType)
     return res.end(data, contentType.startsWith('text') ? 'utf8' : 'binary')
   }
@@ -85,6 +84,8 @@ router.get('/folder/:folder', async function (req, res) {
 
 router.get('/video/:id', async function (req, res, next) {
   let record = await Asset.findOne({media_id: req.params.id})
+  record = record.toObject()
+  record.size = prettysize(record.size)
   res.render('video_viewer', record)
 })
 
