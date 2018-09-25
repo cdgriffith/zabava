@@ -3,17 +3,14 @@ const router = express.Router()
 const {generateToken} = require('../lib/auth')
 const {getProvider} = require('../lib/storage')
 const request = require('request')
-const Asset = require('../lib/models/asset')()
+const Asset = require('../lib/models/asset')
 const {decrypt} = require('../lib/encryption')
 const {log} = require('winston')
-const prettysize = require('prettysize')
+const prettySize = require('prettysize')
+const {mediaTypes} = require('../lib/media')
 
 const provider = getProvider()
 const storage = new provider()
-storage.ensureAuth().catch(err => {
-  log('error', `Could not authenticate to storage provider: ${err}`)
-  process.exit(1)
-})
 
 router.get('/', async function (req, res) {
   res.cookie('token', await generateToken('test'), {
@@ -22,7 +19,6 @@ router.get('/', async function (req, res) {
     signed: true
   }).render('login')
 })
-
 
 const getEncryptedAsset = async (contentId, filePath) => {
   log('debug', `Request ${contentId} at ${filePath}`)
@@ -36,7 +32,7 @@ const getEncryptedAsset = async (contentId, filePath) => {
     return false
 }
 
-router.get('/asset/:id/*', async function (req, res) {
+router.get('/asset/:id/*', async (req, res) => {
   let contentId = req.params.id
   let filePath = req.params[0]
   let stream = req.query.stream || 'true'
@@ -54,7 +50,7 @@ router.get('/asset/:id/*', async function (req, res) {
   }
 })
 
-router.get('/cover/:id', async function (req, res){
+router.get('/cover/:id', async (req, res) => {
   let record = await Asset.findOne({media_id: req.params.id})
   let data = await getEncryptedAsset(req.params.id, record.cover)
   if (!data){
@@ -65,35 +61,109 @@ router.get('/cover/:id', async function (req, res){
 
 })
 
-router.get('/subtitles/:id', async function (req, res){
-  let record = await Asset.findOne({media_id: req.params.id})
-  return record.subtitles
-})
+// router.get('/subtitles/:id', async (req, res) => {
+//   let record = await Asset.findOne({media_id: req.params.id})
+//   return record.subtitles
+// })
 
 
-router.get('/folder/:folder', async function (req, res) {
-  let records = await Asset.find({media_type: req.params.folder.trim()})
-  let files = []
-  for (let file of records){
-    files.push({cover: `/cover/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
+// Views
+
+router.get('/folder/:folder', async (req, res) => {
+  let mediaType = req.params.folder.trim()
+  if (!Object.keys(mediaTypes).includes(mediaType)){
+    throw Error('Not a supported media type')
   }
+  let media = mediaTypes[mediaType]
+  if (media.series){
+    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType}}, {'$group': {_id: '$series'}}])
+    let items = []
+    for (let series of seriesRaw){
+      series = series._id
+      let record = await Asset.findOne({media_type: mediaType, series: series}).sort({season: -1})
+      items.push({cover: `/cover/${record.media_id}`, series: series})
+    }
+    res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
 
-  res.render('folder_viewer', {base: req.params.folder, folders: files})
+  } else {
+    let records = await Asset.find({media_type: mediaType})
+    let files = []
+    for (let file of records){
+      files.push({cover: `/cover/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
+    }
+    res.render('folder_viewer', {series: false, folder: mediaType, items: files, mediaTypes: mediaTypes})
+  }
+})
+
+router.get('/folder/:folder/:series', async (req, res) => {
+  let mediaType = req.params.folder.trim()
+  if (!Object.keys(mediaTypes).includes(mediaType)){
+    throw Error('Not a supported media type')
+  }
+  let media = mediaTypes[mediaType]
+
+  let seasons = await Asset.aggregate([{'$match': {media_type: mediaType, series: req.params.series.trim()}}, {'$group': {_id: '$season'}}])
+  let files = []
+  for (let season of seasons){
+    season = season._id
+    let record = await Asset.findOne({media_type: req.params.folder.trim(), series: req.params.series.trim(), season: season}).sort({episode: -1})
+    files.push({cover: `/cover/${record.media_id}`, season: season})
+  }
+  res.render('series_viewer', {series: req.params.series, items: files, mediaTypes: mediaTypes, folder: mediaType})
+})
+
+router.get('/folder/:folder/:series/:season', async (req, res) => {
+  let mediaType = req.params.folder.trim()
+  if (!Object.keys(mediaTypes).includes(mediaType)){
+    throw Error('Not a supported media type')
+  }
+  let series = req.params.series.trim()
+  let season = parseInt(req.params.season.trim())
+  let episodes = await Asset.find({media_type: mediaType, series: series, season: season})
+
+  let items = []
+  for (let episode of episodes){
+    items.push({episode: episode.episode, media_id: episode.media_id})
+  }
+  res.render('season_viewer', {series: series, items: items, season:season, mediaTypes: mediaTypes, folder: mediaType})
 })
 
 
-router.get('/video/:id', async function (req, res, next) {
+
+router.get('/video/:id', async (req, res) => {
   let record = await Asset.findOne({media_id: req.params.id})
   if (record.times_watched){
     record.times_watched += 1
   } else {
     record.times_watched = 1
   }
-  record = record.toObject()
-  record.size = prettysize(record.size)
-  res.render('video_viewer', record)
+  let recordObj = record.toObject()
+  recordObj.size = prettySize(record.size)
+  res.render('video_viewer', {mediaTypes: mediaTypes, ...recordObj})
   await record.save()
 })
 
+router.get('/video/:id/edit', async (req, res) => {
+  let record = await Asset.findOne({media_id: req.params.id})
+  let recordObj = record.toObject()
+  recordObj.cover = `/cover/${recordObj.media_id}`
+  res.render('video_editor', {mediaTypes: mediaTypes, ...recordObj})
+})
+
+
+router.get('/export', async (req, res) => {
+  let data = {'assets': [],
+              'users': [],
+              'env': process.env}
+  for (let asset of await Asset.find({})){
+    data.assets.push(asset.toObject())
+  }
+  for (let user of await Users.find({})){
+    data.users.push(user.toObject())
+  }
+
+
+
+})
 
 module.exports = router

@@ -20,7 +20,7 @@ winston.level = process.env.LOG_LEVEL || 'debug'
 
 winston.stream = {
   write: function (message, encoding) {
-    winston.info(message)
+    winston.info(message.trim())
   }
 }
 

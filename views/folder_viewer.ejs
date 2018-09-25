@@ -3,9 +3,13 @@
 
 <div class="container-fluid">
     <div class="row">
-                <% for(let folder of folders) {%>
+                <% for(let item of items) {%>
                     <div class="cover">
-                        <a href="/video/<%= folder.media_id %>" title="<%= folder.media_name %>"  > <img class="cover" src="<%= folder.cover %>" /></a>
+                        <% if (series) {%>
+                            <a href="/folder/<%= folder %>/<%= item.series %>" title="<%= item.series %>"  > <img class="cover" src="<%= item.cover %>" /></a>
+                        <% } else { %>
+                            <a href="/video/<%= item.media_id %>" title="<%= item.media_name %>"  > <img class="cover" src="<%= item.cover %>" /></a>
+                        <% } %>
                     </div>
                 <% } %>
     </div>

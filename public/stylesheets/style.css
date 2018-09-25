@@ -22,3 +22,19 @@ a {
   width: 200px;
   height: 300px;
 }
+
+.cover-preview {
+  width: 100px;
+  height: 150px;
+}
+
+.corner {
+  width: 40px;
+  height: 40px;
+  background: url('/images/corner.png') no-repeat;
+}
+
+.header-form {
+  height: 25px;
+  padding: 0 5px;
+}

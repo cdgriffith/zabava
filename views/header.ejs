@@ -13,21 +13,24 @@
 <body>
 
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark" style="background-color: #283E47; padding: 0 20px">
+    <nav class="navbar navbar-expand-md navbar-dark" style="height: 40px; background-color: #283E47; padding: 0 20px; min-width:100%">
         <a class="navbar-brand" href="#">Zabava</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
                 aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
-            <div class="dropdown">
-                <button class="btn btn-secondary btn-sm dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Select Folder
+            <div class="dropdown header-form ">
+                <button class="btn btn-secondary btn-sm dropdown-toggle header-form" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Media Folder
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item" href="/folder/movies">Movies</a>
-                    <a class="dropdown-item" href="/folder/tv_shows">TV Shows</a>
-                    <a class="dropdown-item" href="/folder/anime">Anime</a>
+                    <% for (let media of Object.keys(mediaTypes)) { %>
+                        <a class="dropdown-item" href="/folder/<%= media %>"><%= mediaTypes[media].label %></a>
+                    <% }%>
+                    <!--<a class="dropdown-item" href="/folder/movies">Movies</a>-->
+                    <!--<a class="dropdown-item" href="/folder/tv_shows">TV Shows</a>-->
+                    <!--<a class="dropdown-item" href="/folder/anime">Anime</a>-->
                 </div>
             </div>
 
@@ -41,8 +44,8 @@
                 </li>
             </ul>
             <form class="form-inline" style="margin-top: 10px">
-                <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                <input class="form-control mr-sm-2 header-form " type="text" placeholder="Search" aria-label="Search" disabled>
+                <button class="btn btn-outline-secondary my-2 my-sm-0 header-form " type="submit" disabled>Search</button>
             </form>
         </div>
     </nav>

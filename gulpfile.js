@@ -23,7 +23,7 @@ gulp.task('link-dependencies', function () {
       .pipe(gulp.dest("./public/javascript/"))
 
   gulp.src("./node_modules/open-iconic/font/css/open-iconic-bootstrap.min.css")
-      .pipe(gulp.dest("./public/javascript/"))
+      .pipe(gulp.dest("./public/stylesheets/"))
 
   gulp.src("./node_modules/open-iconic/font/fonts/*")
       .pipe(gulp.dest("./public/fonts/"))

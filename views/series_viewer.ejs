@@ -1,0 +1,21 @@
+<% include header.ejs %>
+
+
+<div class="container-fluid">
+    <h1> <%= series %></h1>
+    <div class="row">
+        <% for(let item of items) {%>
+        <div style="position:relative" class="cover">
+            <div>
+                <a href="/folder/<%= folder %>/<%= series %>/<%= item.season %>" title="Season <%= item.season %>"  > <img class="cover" src="<%= item.cover %>" /></a>
+            </div>
+            <div style="position:absolute; left:0; top:0;" >
+                <div class="corner"><%= item.season %></div>
+            </div>
+        </div>
+        <% } %>
+    </div>
+</div>
+
+
+<% include footer.ejs %>

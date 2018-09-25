@@ -1,0 +1,95 @@
+<% include header.ejs %>
+
+<div class="container-fluid">
+
+    <div class="row" style="height: 42px; margin: 6px 0">
+        <% if (series) { %>
+            <h2><%= series %>: Season <%= season %>, Episode <%= episode %> (<%= media_name %>) </h2>
+
+        <% } else { %>
+            <h2><%= media_name %></h2>
+        <% } %>
+    </div>
+
+
+    <form>
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="media-name">Name</label>
+                <input type="text" class="form-control" id="media-name" value="<%= media_name %>">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="media-type">Type</label>
+                <input type="text" class="form-control" id="media-type" value="<%= media_type %>">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="year">Year</label>
+                <select class="form-control" id="year">
+                    <option value="" <% ('' === year)?'selected':'' %> >Year</option>
+                    <% for (let i of Array.from({length: new Date().getFullYear() - 1898}, (x,i) => i + 1900)){ %>
+                    <option value="<%=i %>" <% (i === year)?'selected':'' %> ><%= i %></option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="series">Series</label>
+                <input type="text" class="form-control" id="series" value="<%= series %>">
+            </div>
+            <div class="form-group col-md-3">
+                <label for="season">Season</label>
+                <select class="form-control" id="season">
+                    <option value="" <% ('' === season)?'selected':'' %> >Season</option>
+                    <% for (let i of Array.from({length: 100}, (x,i) => i + 1)){ %>
+                        <option value="<%=i %>" <% (i === season)?'selected':'' %> ><%= i %></option>
+                    <% } %>
+                </select>
+            </div>
+            <div class="form-group col-md-3">
+                <label for="episode">Episode</label>
+                <select class="form-control" id="episode">
+                    <option value=""<% ('' === episode)?'selected':'' %> >Episode</option>
+                    <% for (let i of Array.from({length: 100}, (x,i) => i + 1)){ %>
+                    <option value="<%=i %>" <% (i === episode)?'selected':'' %> ><%= i %></option>
+                    <% } %>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="genres">Genres (comma separated)</label>
+
+
+        <%=subtitles %>
+        <%for (let sub of subtitles) { %>
+        <div>
+            <span><%= JSON.stringify(sub) %></span>
+        </div>
+        <% } %>
+
+
+        <img class="cover-preview" src="<%= cover %>" />
+
+
+
+        <div class="form-group">
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="auto_play_series">
+                <label class="form-check-label" for="auto_play_series">
+                    auto_play_series
+                </label>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+
+</div>
+
+<script type="application/javascript" src="/javascript/jquery.min.js"></script>
+<script type="application/javascript" src="/javascript/shaka-player.compiled.js"></script>
+<script type="application/javascript"  src="/javascript/iso-639-1.js"></script>
+
+<% include footer.ejs %>
+

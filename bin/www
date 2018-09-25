@@ -8,6 +8,8 @@ let app = require('../app')
 let debug = require('debug')('blaze-player:server')
 let http = require('http')
 let db = require('../lib/db')
+const {getProvider} = require('../lib/storage')
+const {log} = require('winston')
 
 /**
  * Get port from environment and store in Express.
@@ -25,13 +27,28 @@ let server = http.createServer(app)
 /**
  * Listen on provided port, on all network interfaces.
  */
+const provider = getProvider()
+const storage = new provider()
+storage.ensureAuth().then(_ => {
+      db()
+          .then(db => {
+            log('debug', 'MongoDB connected')
+            mongoose = db
 
-db()
-  .then(_ => server.listen(port))
-  .catch( err => {
-    console.error(err)
-    process.exit(1)
+            log('info', `Starting server: http://localhost:${port} `)
+            server.listen(port)
+          })
+          .catch(err => {
+            console.error(err)
+            process.exit(1)
+          })
+    }
+).catch(err => {
+  log('error', `Could not authenticate to storage provider: ${err}`)
+  process.exit(1)
 })
+let mongoose
+
 
 server.on('error', onError)
 server.on('listening', onListening)
@@ -64,6 +81,7 @@ function onError (error) {
   if (error.syscall !== 'listen') {
     throw error
   }
+  db.close()
 
   let bind = typeof port === 'string'
     ? 'Pipe ' + port

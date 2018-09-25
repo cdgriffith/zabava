@@ -1,18 +1,9 @@
 <% include header.ejs %>
 
 <div class="container-fluid">
-
-    <div class="row" style="height: 42px; margin: 6px 0">
-        <% if (series) { %>
-            <h2><%= series %>: Season <%= season %>, Episode <%= episode %> (<%= media_name %>) </h2>
-
-        <% } else { %>
-            <h2><%= media_name %></h2>
-        <% } %>
-    </div>
-    <div class="row" style="height: calc(100% - 140px)">
-        <div class="col-10 auto-fit">
-            <video id="video" style="max-height: 100%; max-width: 100%" width="100%" controls autoplay>
+    <div class="row" style="height: calc(100% - 100px)">
+        <div class="col-sm-6 col-md-8 col-lg-9 auto-fit" style="padding-left: 0">
+            <video id="video" style="max-height: 100%; max-width: 100%;" width="100%" controls autoplay>
                 <% for (let subs of subtitles || []) { %>
                     <track label="English" kind="subtitles" srclang="<%= subs.language %>"
                            src="/asset/<%= subs.file %>?stream=false&type=text/plain">
@@ -20,7 +11,13 @@
 
             </video>
         </div>
-        <div class="col-2">
+        <div class="col-sm-6 col-md-4 col-lg-3">
+            <% if (!!locals.series) { %>
+                <h3><%= series %>: Season <%= season %>, Episode <%= episode %> (<%= media_name %>) </h3>
+
+            <% } else { %>
+                <h3><%= media_name %></h3>
+            <% } %>
             <table class="table">
                 <tbody>
                 <tr>
