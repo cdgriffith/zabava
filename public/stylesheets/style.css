@@ -1,24 +1,21 @@
 html {
   height: 100%;
   width: 100%;
+  overflow-x: hidden;
 }
 
 body {
   padding: 0;
   margin: 0;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  color: #dee2e6;
   height: 100%;
   width: 100%;
+  background-color: #5a6268;
 }
 
 a {
   color: #00B7FF;
-}
-
-
-.video-player {
-  max-height: 100%;
-  max-width: 100%;
 }
 
 .cover {

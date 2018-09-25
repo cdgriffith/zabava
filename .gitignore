@@ -66,4 +66,7 @@ public/*/video*
 public/*/bootstrap*
 public/*/jquery*
 public/*/shaka*
+public/*/iso-*
+public/*/open-iconic*
+public/fonts/
 output/

@@ -23,6 +23,7 @@
     "get-folder-size": "^2.0.0",
     "hash-files": "^1.1.1",
     "http-errors": "~1.6.2",
+    "iso-639-1": "^2.0.3",
     "jade": "~1.11.0",
     "jquery": "^3.3.1",
     "jsonwebtoken": "latest",
@@ -30,16 +31,18 @@
     "mongoose": "^5.2.16",
     "mongoose-encryption": "^2.0.1",
     "morgan": "~1.9.0",
+    "open-iconic": "^1.1.1",
     "popper": "^1.0.1",
+    "prettysize": "latest",
     "request": "latest",
     "shaka-player": "2.5.0-beta",
     "sharp": "^0.20.8",
     "uuid": "latest",
-    "winston": "^3.1.0",
-    "prettysize": "latest"
+    "winston": "^3.1.0"
   },
   "devDependencies": {
     "gulp": "^3.9.1",
+    "gulp-rename": "^1.4.0",
     "mocha": "^5.2.0"
   },
   "homepage": "https://github.com/cdgriffith/zabava",

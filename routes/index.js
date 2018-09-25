@@ -84,9 +84,15 @@ router.get('/folder/:folder', async function (req, res) {
 
 router.get('/video/:id', async function (req, res, next) {
   let record = await Asset.findOne({media_id: req.params.id})
+  if (record.times_watched){
+    record.times_watched += 1
+  } else {
+    record.times_watched = 1
+  }
   record = record.toObject()
   record.size = prettysize(record.size)
   res.render('video_viewer', record)
+  await record.save()
 })
 
 

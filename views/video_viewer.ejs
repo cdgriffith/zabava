@@ -1,55 +1,54 @@
 <% include header.ejs %>
 
+<div class="container-fluid">
 
-<video id="video" width="640" controls autoplay>
-    <% for (let subs of subtitles || []) { %>
-        <track label="English" kind="subtitles" srclang="<%= subs.language %>"
-               src="/asset/<%= subs.file %>?stream=false&type=text/plain">
-    <% } %>
-
-</video>
-<div id="info">
-    <table class="table">
-        <tbody>
-        <tr>
-            <th scope="row">Name</th>
-            <td><%= media_name %></td>
-
-        </tr>
-        <tr>
-            <th scope="row"><label for="track-select"> Language</label></th>
-            <td><select id="track-select" name="track" onchange="setTrack()"></select></td>
-
-        </tr>
-        <tr>
-            <th scope="row">Size</th>
-            <td><%= size || 'unknown' %></td>
-        </tr>
+    <div class="row" style="height: 42px; margin: 6px 0">
         <% if (series) { %>
-            <tr>
-                <th scope="row">Series</th>
-                <td><%= series %></td>
-            </tr>
-        <% } %>
-        <% if (season) { %>
-            <tr>
-                <th scope="row">Season</th>
-                <td><%= season %></td>
-            </tr>
-        <% } %>
-        <% if (episode) { %>
-            <tr>
-                <th scope="row">Episode</th>
-                <td><%= episode %></td>
-            </tr>
-        <% } %>
+            <h2><%= series %>: Season <%= season %>, Episode <%= episode %> (<%= media_name %>) </h2>
 
-        </tbody>
-    </table>
+        <% } else { %>
+            <h2><%= media_name %></h2>
+        <% } %>
+    </div>
+    <div class="row" style="height: calc(100% - 140px)">
+        <div class="col-10 auto-fit">
+            <video id="video" style="max-height: 100%; max-width: 100%" width="100%" controls autoplay>
+                <% for (let subs of subtitles || []) { %>
+                    <track label="English" kind="subtitles" srclang="<%= subs.language %>"
+                           src="/asset/<%= subs.file %>?stream=false&type=text/plain">
+                <% } %>
+
+            </video>
+        </div>
+        <div class="col-2">
+            <table class="table">
+                <tbody>
+                <tr>
+                    <th scope="row"><label for="track-select"> Audio Track</label></th>
+                    <td><select id="track-select" name="track" onchange="setTrack()"></select></td>
+                </tr>
+                <tr>
+                    <th scope="row">Size</th>
+                    <td><%= size || 'unknown' %> </td>
+                </tr>
+                <tr>
+                    <th scope="row">Year Released</th>
+                    <td><%= (!!locals.year)?year:'unknown' %> </td>
+                </tr>
+                <tr>
+                    <th scope="row">Times watched</th>
+                    <td><%= (!!locals.times_watched)?times_watched:'0' %> </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
 
-<script src="/javascript/jquery.min.js" type="application/javascript"></script>
-<script src="/javascript/shaka-player.compiled.debug.js" type="application/javascript"></script>
+<script type="application/javascript" src="/javascript/jquery.min.js"></script>
+<script type="application/javascript" src="/javascript/shaka-player.compiled.js"></script>
+<script type="application/javascript"  src="/javascript/iso-639-1.js"></script>
 
 <script>
 
@@ -87,13 +86,31 @@
     window.player = player
 
     player.addEventListener('error', onErrorEvent)
-    player.addEventListener('ended', onEnded)
+    video.addEventListener('ended', onEnded) // NOT the player
 
     player.load(manifestUri).then(function () {
       availableTracks = player.getVariantTracks()
       for (let [index, track] of availableTracks.entries()) {
         if (track.width) {
-          $('#track-select').append($('<option>', {value: index, text: track.language}))
+          let audioType = 'Unknown Channels'
+          if (!track.channelsCount){
+            console.error(`Track does not have channels: ${track}`)
+          } else if (track.channelsCount > 2){
+            audioType = 'Surround'
+          } else if (track.channelsCount === 2){
+            audioType = 'Stereo'
+          } else (
+              audioType = 'Mono'
+          )
+
+          let audioLanguage = track.language
+          try {
+            audioLanguage = ISO6391.getName(track.language)
+          } catch (err) {
+            console.error(`Dumbass coder missed this one: ${err}`)
+          }
+
+          $('#track-select').append($('<option>', {value: index, text: `${audioLanguage} - ${audioType}` }))
         }
       }
     }).catch(onError)
@@ -111,6 +128,7 @@
 
   function onEnded(event) {
     // autoplay next if needed
+    console.log('Ended')
   }
 
   function onErrorEvent(event) {
