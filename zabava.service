@@ -10,7 +10,7 @@ RestartSec=20
 User=zabava
 Type=simple
 WorkingDirectory=/opt/zabava/
-ExecStart=/root/.nvm/versions/node/v10.11.0/bin/node ./bin/www
+ExecStart=/usr/bin/nodejs ./bin/www
 
 [Install]
 WantedBy=multi-user.target

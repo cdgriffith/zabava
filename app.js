@@ -6,7 +6,6 @@ const cookieParser = require('cookie-parser')
 const morgan = require('morgan')
 const jwt = require('express-jwt')
 const winston = require('winston')
-
 const indexRouter = require('./routes/index')
 const apiRouter = require('./routes/api')
 

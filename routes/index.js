@@ -15,11 +15,20 @@ const provider = getProvider()
 const storage = new provider()
 
 router.get('/', async function (req, res) {
-  res.cookie('token', await generateToken('test'), {
-    maxAge: 24 * 60 * 60 * 1000,
-    httpOnly: true,
-    signed: true
-  }).render('login')
+  res.render('login')
+})
+
+router.post('/',  async (req, res) => {
+  let password = req.body.password
+  console.log(req.body)
+  if (password === 'a12sd34f') {
+    res.cookie('token', await generateToken('test'), {
+      maxAge: 24 * 60 * 60 * 1000,
+      httpOnly: true,
+      signed: true
+    }).redirect('/folder/movies')
+  }
+  res.redirect('/')
 })
 
 const getEncryptedAsset = async (contentId, filePath) => {

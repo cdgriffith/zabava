@@ -38,3 +38,35 @@ a {
   height: 25px;
   padding: 0 5px;
 }
+
+.login-outer {
+  display: table;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}
+
+.login-middle {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.login-inner {
+  margin-left: auto;
+  margin-right: auto;
+  width: 300px;
+  height: 250px;
+  background: white;
+  -moz-border-radius: 15px;
+  border-radius: 15px;
+  text-align: center;
+}
+
+.login-form {
+  margin: 20px;
+  padding-top:20px;
+}
+
+.login-inner h2 {
+  color: #0b2e13;
+}
