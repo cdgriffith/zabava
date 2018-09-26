@@ -4,10 +4,12 @@ const {generateToken} = require('../lib/auth')
 const {getProvider} = require('../lib/storage')
 const request = require('request')
 const Asset = require('../lib/models/asset')
+const User = require('../lib/models/user')
 const {decrypt} = require('../lib/encryption')
 const {log} = require('winston')
 const prettySize = require('prettysize')
 const {mediaTypes} = require('../lib/media')
+const Minizip = require('minizip-asm.js')
 
 const provider = getProvider()
 const storage = new provider()
@@ -158,12 +160,29 @@ router.get('/export', async (req, res) => {
   for (let asset of await Asset.find({})){
     data.assets.push(asset.toObject())
   }
-  for (let user of await Users.find({})){
+  for (let user of await User.find({})){
     data.users.push(user.toObject())
   }
 
+  let options = {}
+  let password = req.headers.password || req.query.password || null
+  if (password){
+    options.password = password
+  }
 
+  let myData = JSON.stringify(data)
+  let mz = new Minizip()
+  mz.append("backup.json", myData, options);
+  res.contentType('application/zip')
+  let exported = Buffer.from(mz.zip())
 
+  let mzv = new Minizip(exported)
+  let compressed = mzv.extract('backup.json', options)
+  if (compressed.toString() !== myData){
+    throw Error('Validation check failed')
+  }
+  return res.end(exported, 'binary')
 })
+
 
 module.exports = router

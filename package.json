@@ -28,6 +28,7 @@
     "jquery": "^3.3.1",
     "jsonwebtoken": "latest",
     "mime-types": "latest",
+    "minizip-asm.js": "^1.0.10",
     "mongoose": "^5.2.16",
     "mongoose-encryption": "^2.0.1",
     "morgan": "~1.9.0",

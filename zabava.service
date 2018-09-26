@@ -1,0 +1,16 @@
+# /etc/systemd/system/zabava.service
+
+[Unit]
+Description=zabava
+After=network.target
+
+[Service]
+Restart=on-failure
+RestartSec=20
+User=zabava
+Type=simple
+WorkingDirectory=/opt/zabava/
+ExecStart=/root/.nvm/versions/node/v10.11.0/bin/node ./bin/www
+
+[Install]
+WantedBy=multi-user.target
