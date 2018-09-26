@@ -10,6 +10,7 @@ const {log} = require('winston')
 const prettySize = require('prettysize')
 const {mediaTypes} = require('../lib/media')
 const Minizip = require('minizip-asm.js')
+const cache = require('apicache').middleware
 
 const provider = getProvider()
 const storage = new provider()
@@ -61,7 +62,7 @@ router.get('/asset/:id/*', async (req, res) => {
   }
 })
 
-router.get('/cover/:id', async (req, res) => {
+router.get('/cover/:id', cache('1 day'),  async (req, res) => {
   let record = await Asset.findOne({media_id: req.params.id})
   let data = await getEncryptedAsset(req.params.id, record.cover)
   if (!data){
