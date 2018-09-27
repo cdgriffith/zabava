@@ -73,10 +73,9 @@
               '<%= encryption.key_id %>': '<%= encryption.key %>'
             }
           },
-          preferredAudioLanguage: 'eng',
-          preferredTextLanguage: 'eng',
+          preferredAudioLanguage: "<%= default_language %>",
           streaming: {
-            bufferingGoal: 120
+            bufferingGoal: 10
           }
         }
     )
@@ -89,7 +88,7 @@
       availableTracks = player.getVariantTracks()
       for (let [index, track] of availableTracks.entries()) {
         if (track.width) {
-          let audioType = 'Unknown Channels'
+          let audioType = 'Unknown'
           if (!track.channelsCount){
             console.error(`Track does not have channels: ${track}`)
           } else if (track.channelsCount > 2){

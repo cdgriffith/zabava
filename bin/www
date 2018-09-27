@@ -5,7 +5,7 @@
  */
 
 let app = require('../app')
-let debug = require('debug')('blaze-player:server')
+let debug = require('debug')('zabava:server')
 let http = require('http')
 let db = require('../lib/db')
 const {getProvider} = require('../lib/storage')

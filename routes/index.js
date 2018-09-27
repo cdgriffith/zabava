@@ -94,17 +94,17 @@ router.get('/folder/:folder', async (req, res) => {
   }
   let media = mediaTypes[mediaType]
   if (media.series){
-    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType}}, {'$group': {_id: '$series'}}])
+    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType, processing: false}}, {'$group': {_id: '$series'}}])
     let items = []
     for (let series of seriesRaw){
       series = series._id
-      let record = await Asset.findOne({media_type: mediaType, series: series}).sort({season: -1})
+      let record = await Asset.findOne({media_type: mediaType, series: series, processing: false}).sort({season: -1})
       items.push({cover: `/cover/${record.media_id}`, series: series})
     }
     res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
 
   } else {
-    let records = await Asset.find({media_type: mediaType})
+    let records = await Asset.find({media_type: mediaType, processing: false})
     let files = []
     for (let file of records){
       files.push({cover: `/cover/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
@@ -120,11 +120,11 @@ router.get('/folder/:folder/:series', async (req, res) => {
   }
   let media = mediaTypes[mediaType]
 
-  let seasons = await Asset.aggregate([{'$match': {media_type: mediaType, series: req.params.series.trim()}}, {'$group': {_id: '$season'}}])
+  let seasons = await Asset.aggregate([{'$match': {media_type: mediaType, series: req.params.series.trim(), processing: false}}, {'$group': {_id: '$season'}}])
   let files = []
   for (let season of seasons){
     season = season._id
-    let record = await Asset.findOne({media_type: req.params.folder.trim(), series: req.params.series.trim(), season: season}).sort({episode: -1})
+    let record = await Asset.findOne({media_type: req.params.folder.trim(), series: req.params.series.trim(), season: season, processing: false}).sort({episode: -1})
     files.push({cover: `/cover/${record.media_id}`, season: season})
   }
   res.render('series_viewer', {series: req.params.series, items: files, mediaTypes: mediaTypes, folder: mediaType})
@@ -137,7 +137,7 @@ router.get('/folder/:folder/:series/:season', async (req, res) => {
   }
   let series = req.params.series.trim()
   let season = parseInt(req.params.season.trim())
-  let episodes = await Asset.find({media_type: mediaType, series: series, season: season})
+  let episodes = await Asset.find({media_type: mediaType, series: series, season: season, processing: false})
 
   let items = []
   for (let episode of episodes){
