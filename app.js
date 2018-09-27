@@ -8,6 +8,7 @@ const jwt = require('express-jwt')
 const winston = require('winston')
 const indexRouter = require('./routes/index')
 const apiRouter = require('./routes/api')
+const {getToken} = require('./lib/auth')
 
 winston.add(new winston.transports.Console({
   format: winston.format.combine(
@@ -36,17 +37,7 @@ app.use(cookieParser(process.env.COOKIE_SECRET))
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(jwt({
   secret: process.env.JWT_SECRET,
-  getToken: function fromHeaderOrQuerystring(req) {
-    if (req.signedCookies.token) {
-      return req.signedCookies.token
-    }
-    else if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
-      return req.headers.authorization.split(' ')[1]
-    } else if (req.query && req.query.token) {
-      return req.query.token
-    }
-    return null
-  }
+  getToken: getToken
 }).unless({path: ['/']}))
 
 app.use('/', indexRouter)

@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const {generateToken} = require('../lib/auth')
+const {generateToken, verifyToken, getToken} = require('../lib/auth')
 const {getProvider} = require('../lib/storage')
 const request = require('request')
 const Asset = require('../lib/models/asset')
@@ -12,21 +12,27 @@ const {mediaTypes} = require('../lib/media')
 const Minizip = require('minizip-asm.js')
 const cache = require('apicache').middleware
 
+
 const provider = getProvider()
 const storage = new provider()
 
 router.get('/', async function (req, res) {
-  res.render('login')
+  try {
+    await verifyToken(getToken(req))
+    res.redirect('/folder/movies')
+  } catch(err){
+    console.error(err)
+    res.render('login')
+  }
 })
 
 router.post('/',  async (req, res) => {
   let password = req.body.password
-  console.log(req.body)
   if (password === 'a12sd34f') {
     res.cookie('token', await generateToken('test'), {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
-      signed: true
+      signed: false
     }).redirect('/folder/movies')
   }
   res.redirect('/')
@@ -62,7 +68,7 @@ router.get('/asset/:id/*', async (req, res) => {
   }
 })
 
-router.get('/cover/:id', cache('1 day'),  async (req, res) => {
+router.get('/cover/:id', cache('3 days'),  async (req, res) => {
   let record = await Asset.findOne({media_id: req.params.id})
   let data = await getEncryptedAsset(req.params.id, record.cover)
   if (!data){

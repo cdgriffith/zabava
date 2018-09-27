@@ -70,3 +70,15 @@ a {
 .login-inner h2 {
   color: #0b2e13;
 }
+
+.nav-dropdown {
+  background-color: #283E47;
+  z-index:20;
+}
+
+.nav {
+  height: 50px;
+  background-color: #283E47;
+  padding: 0 20px;
+  min-width:100%;
+}

@@ -15,25 +15,25 @@
 <body>
 
 <header>
-    <nav class="navbar navbar-expand-md navbar-dark" style="height: 40px; background-color: #283E47; padding: 0 20px; min-width:100%">
+    <nav class="navbar navbar-expand-md navbar-dark nav">
         <a class="navbar-brand" href="#">Zabava</a>
+        <button class="btn btn-secondary btn-sm dropdown-toggle header-form" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Media Folder
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <% for (let media of Object.keys(mediaTypes)) { %>
+                <a class="dropdown-item" href="/folder/<%= media %>" >
+                    <%= mediaTypes[media].label %>
+                </a>
+            <% }%>
+        </div>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false"
                 aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarCollapse">
+        <div class="collapse navbar-collapse nav-dropdown" id="navbarCollapse">
             <div class="dropdown header-form ">
-                <button class="btn btn-secondary btn-sm dropdown-toggle header-form" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Media Folder
-                </button>
-                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                    <% for (let media of Object.keys(mediaTypes)) { %>
-                        <a class="dropdown-item" href="/folder/<%= media %>"><%= mediaTypes[media].label %></a>
-                    <% }%>
-                    <!--<a class="dropdown-item" href="/folder/movies">Movies</a>-->
-                    <!--<a class="dropdown-item" href="/folder/tv_shows">TV Shows</a>-->
-                    <!--<a class="dropdown-item" href="/folder/anime">Anime</a>-->
-                </div>
+
             </div>
 
             <ul class="navbar-nav mr-auto">

@@ -2,7 +2,7 @@
 
 <div class="container-fluid">
     <div class="row" style="height: calc(100% - 100px)">
-        <div class="col-sm-6 col-md-8 col-lg-9 auto-fit" style="padding-left: 0">
+        <div class="col-sm-6 col-md-8 col-lg-9 auto-fit" style="padding: 0; z-index:10;">
             <video id="video" style="max-height: 100%; max-width: 100%;" width="100%" controls autoplay>
                 <% for (let subs of subtitles || []) { %>
                     <track label="English" kind="subtitles" srclang="<%= subs.language %>"
