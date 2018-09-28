@@ -30,11 +30,11 @@
                 </tr>
                 <tr>
                     <th scope="row">Year Released</th>
-                    <td><%= (!!locals.year)?year:'unknown' %> </td>
+                    <td><%= (!!locals.year) ? year : 'unknown' %> </td>
                 </tr>
                 <tr>
                     <th scope="row">Times watched</th>
-                    <td><%= (!!locals.times_watched)?times_watched:'0' %> </td>
+                    <td><%= (!!locals.times_watched) ? times_watched : '0' %> </td>
                 </tr>
                 </tbody>
             </table>
@@ -45,7 +45,7 @@
 
 <script type="application/javascript" src="/javascript/jquery.min.js"></script>
 <script type="application/javascript" src="/javascript/shaka-player.compiled.js"></script>
-<script type="application/javascript"  src="/javascript/iso-639-1.js"></script>
+<script type="application/javascript" src="/javascript/iso-639-1.js"></script>
 
 <script>
 
@@ -73,9 +73,13 @@
               '<%= encryption.key_id %>': '<%= encryption.key %>'
             }
           },
+          abr: {enabled: false},
           preferredAudioLanguage: "<%= default_language %>",
+
           streaming: {
-            bufferingGoal: 10
+            bufferingGoal: 240,
+            rebufferingGoal: 0,
+            ignoreTextStreamFailures: true
           }
         }
     )
@@ -85,32 +89,32 @@
     video.addEventListener('ended', onEnded) // NOT the player
 
     player.load(manifestUri).then(function () {
-      try{
-          availableTracks = player.getVariantTracks()
-          for (let [index, track] of availableTracks.entries()) {
-            if (track.width) {
-              let audioType = 'Unknown'
-              if (!track.channelsCount){
-                console.error(`Track does not have channels: ${track}`)
-              } else if (track.channelsCount > 2){
-                audioType = 'Surround'
-              } else if (track.channelsCount === 2){
-                audioType = 'Stereo'
-              } else (
-                  audioType = 'Mono'
-              )
+      try {
+        availableTracks = player.getVariantTracks()
+        for (let [index, track] of availableTracks.entries()) {
+          if (track.width) {
+            let audioType = 'Unknown'
+            if (!track.channelsCount) {
+              console.error(`Track does not have channels: ${track}`)
+            } else if (track.channelsCount > 2) {
+              audioType = 'Surround'
+            } else if (track.channelsCount === 2) {
+              audioType = 'Stereo'
+            } else (
+                audioType = 'Mono'
+            )
 
-              let audioLanguage = track.language
-              try {
-                audioLanguage = ISO6391.getName(track.language)
-              } catch (err) {
-                console.error(`Dumbass coder missed this one: ${err}`)
-              }
-
-              $('#track-select').append($('<option>', {value: index, text: `${audioLanguage} - ${audioType}` }))
+            let audioLanguage = track.language
+            try {
+              audioLanguage = ISO6391.getName(track.language)
+            } catch (err) {
+              console.error(`Dumbass coder missed this one: ${err}`)
             }
+
+            $('#track-select').append($('<option>', {value: index, text: `${audioLanguage} - ${audioType}`}))
           }
-        } catch (err) {
+        }
+      } catch (err) {
         console.error(`No idea why this errored: ${err}`)
       }
     }).catch(onError)
