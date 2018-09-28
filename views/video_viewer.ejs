@@ -85,29 +85,33 @@
     video.addEventListener('ended', onEnded) // NOT the player
 
     player.load(manifestUri).then(function () {
-      availableTracks = player.getVariantTracks()
-      for (let [index, track] of availableTracks.entries()) {
-        if (track.width) {
-          let audioType = 'Unknown'
-          if (!track.channelsCount){
-            console.error(`Track does not have channels: ${track}`)
-          } else if (track.channelsCount > 2){
-            audioType = 'Surround'
-          } else if (track.channelsCount === 2){
-            audioType = 'Stereo'
-          } else (
-              audioType = 'Mono'
-          )
+      try{
+          availableTracks = player.getVariantTracks()
+          for (let [index, track] of availableTracks.entries()) {
+            if (track.width) {
+              let audioType = 'Unknown'
+              if (!track.channelsCount){
+                console.error(`Track does not have channels: ${track}`)
+              } else if (track.channelsCount > 2){
+                audioType = 'Surround'
+              } else if (track.channelsCount === 2){
+                audioType = 'Stereo'
+              } else (
+                  audioType = 'Mono'
+              )
 
-          let audioLanguage = track.language
-          try {
-            audioLanguage = ISO6391.getName(track.language)
-          } catch (err) {
-            console.error(`Dumbass coder missed this one: ${err}`)
+              let audioLanguage = track.language
+              try {
+                audioLanguage = ISO6391.getName(track.language)
+              } catch (err) {
+                console.error(`Dumbass coder missed this one: ${err}`)
+              }
+
+              $('#track-select').append($('<option>', {value: index, text: `${audioLanguage} - ${audioType}` }))
+            }
           }
-
-          $('#track-select').append($('<option>', {value: index, text: `${audioLanguage} - ${audioType}` }))
-        }
+        } catch (err) {
+        console.error(`No idea why this errored: ${err}`)
       }
     }).catch(onError)
   }
