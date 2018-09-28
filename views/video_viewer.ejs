@@ -129,6 +129,8 @@
 
   function onErrorEvent(event) {
     // Extract the shaka.util.Error object from the event.
+    console.log(event)
+    console.log(JSON.stringify(event))
     onError(event.detail)
   }
 
