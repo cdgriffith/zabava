@@ -56,8 +56,7 @@ router.get('/asset/:id/*', async (req, res) => {
   let stream = req.query.stream || 'true'
   let contentType = req.query.type || 'image/jpeg'
   if (stream.toLowerCase() === 'true'){
-    request(await storage.streamUrl(`${contentId}/${filePath}`, false),
-        {headers: {Authorization: storage.authToken}}).pipe(res)
+    request(await storage.streamUrl(`${contentId}/${filePath}`, false), {headers: {Authorization: storage.authToken}}).pipe(res)
   } else {
     let data = await getEncryptedAsset(contentId, `${contentId}/${filePath}`)
     if (!data){
@@ -198,6 +197,20 @@ router.get('/export', async (req, res) => {
     throw Error('Validation check failed')
   }
   return res.end(exported, 'binary')
+})
+
+router.post('/drm', async (req, res) => {
+  console.log(req.body.kids)
+  res.json({
+    "keys":
+        [{
+          "kty":"oct",
+          "k":"tQ0bJVWb6b0KPL6KtZIy_A",
+          "kid":"LwVHf8JLtPrv2GUXFW2v_A"
+        }],
+    'type':"temporary"
+  })
+
 })
 
 

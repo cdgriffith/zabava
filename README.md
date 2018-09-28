@@ -92,6 +92,8 @@ Info about the files will be stored in a locally encrypted Mongo Database
     
     
     
+# FFMPEG 
 
+http://oss.netfarm.it/mplayer/#libfdk-aac
 
 
