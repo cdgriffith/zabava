@@ -135,6 +135,7 @@
   function onError(error) {
     // Log the error.
     // TODO print this on page
+    console.log(`Error ${error.code} - object: ${JSON.stringify(error)}`)
     console.error('Error code', error.code, 'object', error)
   }
 
