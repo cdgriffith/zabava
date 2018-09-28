@@ -11,7 +11,7 @@ gulp.task('link-dependencies', function () {
   gulp.src("./node_modules/jquery/dist/jquery*")
   .pipe(gulp.dest("./public/javascript/"))
 
-  gulp.src("./node_modules/shaka-player/dist/shaka-player.compiled*")
+  gulp.src("./node_modules/shaka-player/dist/shaka-player.compiled.debug*")
       .pipe(gulp.dest("./public/javascript/"))
 
   gulp.src("./node_modules/iso-639-1/build/index.js")
