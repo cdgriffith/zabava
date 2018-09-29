@@ -58,6 +58,10 @@ app.use(function (err, req, res, next) {
     return res.redirect("/")
   }
 
+  if (err.status === 404){
+    return res.status(404).render('not_found')
+  }
+
   res.locals.message = err.message
   res.locals.error = req.app.get('env') === 'development' ? err : {}
 

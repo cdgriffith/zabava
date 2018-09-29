@@ -90,10 +90,10 @@ router.get('/cover/:id', cache('3 days'),  async (req, res) => {
 
 // Views
 
-router.get('/folder/:folder', async (req, res) => {
+router.get('/folder/:folder', async (req, res, next) => {
   let mediaType = req.params.folder.trim()
   if (!Object.keys(mediaTypes).includes(mediaType)){
-    throw Error('Not a supported media type')
+    return next(Error('Not a supported media type'))
   }
   let media = mediaTypes[mediaType]
   if (media.series){
@@ -116,10 +116,10 @@ router.get('/folder/:folder', async (req, res) => {
   }
 })
 
-router.get('/folder/:folder/:series', async (req, res) => {
+router.get('/folder/:folder/:series', async (req, res, next) => {
   let mediaType = req.params.folder.trim()
   if (!Object.keys(mediaTypes).includes(mediaType)){
-    throw Error('Not a supported media type')
+    return next(Error('Not a supported media type'))
   }
   let media = mediaTypes[mediaType]
 
@@ -133,10 +133,10 @@ router.get('/folder/:folder/:series', async (req, res) => {
   res.render('series_viewer', {series: req.params.series, items: files, mediaTypes: mediaTypes, folder: mediaType})
 })
 
-router.get('/folder/:folder/:series/:season', async (req, res) => {
+router.get('/folder/:folder/:series/:season', async (req, res, next) => {
   let mediaType = req.params.folder.trim()
   if (!Object.keys(mediaTypes).includes(mediaType)){
-    throw Error('Not a supported media type')
+    return next(Error('Not a supported media type'))
   }
   let series = req.params.series.trim()
   let season = parseInt(req.params.season.trim())
@@ -229,7 +229,7 @@ router.get('/export', async (req, res) => {
   let mzv = new Minizip(exported)
   let compressed = mzv.extract('backup.json', options)
   if (compressed.toString() !== myData){
-    throw Error('Validation check failed')
+    return next(Error('Validation check failed'))
   }
   return res.end(exported, 'binary')
 })
