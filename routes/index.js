@@ -19,7 +19,7 @@ const storage = new provider()
 router.get('/', async function (req, res) {
   try {
     await verifyToken(getToken(req))
-    res.redirect('/folder/movies')
+    res.redirect(`/folder/${Object.keys(mediaTypes)[0]}`)
   } catch(err){
     console.error(err)
     res.render('login')
@@ -33,7 +33,7 @@ router.post('/',  async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
       signed: false
-    }).redirect('/folder/movies')
+    }).redirect(`/folder/${Object.keys(mediaTypes)[0]}`)
   }
   res.redirect('/')
 })
