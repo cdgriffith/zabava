@@ -38,6 +38,10 @@ router.post('/',  async (req, res) => {
   res.redirect('/')
 })
 
+router.get('/logout', async (req, res) => {
+  res.clearCookie('token').redirect('/')
+})
+
 const getEncryptedAsset = async (contentId, filePath) => {
   log('debug', `Request ${contentId} at ${filePath}`)
     let record = await Asset.findOne({media_id: contentId})

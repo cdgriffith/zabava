@@ -5,7 +5,7 @@
     <h1> <%= series %></h1>
     <div class="row">
         <% for(let item of items) {%>
-        <div style="position:relative" class="cover">
+        <div style="position:relative" class="video-select">
             <div>
                 <a href="/folder/<%= folder %>/<%= series %>/<%= item.season %>" title="Season <%= item.season %>"  > <img class="cover" src="<%= item.cover %>" /></a>
             </div>

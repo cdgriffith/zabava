@@ -23,6 +23,25 @@ a {
   height: 300px;
 }
 
+.video-select {
+  margin: 10px 3px;
+  height: 320px;
+  width: 200px;
+}
+
+.video-select h3{
+  width: 200px;
+  font-size: 16px;
+  font-family: 'Open Sans', sans-serif;
+  /*word-wrap: break-word;*/
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 2px;
+  margin: 0;
+  overflow: hidden;
+  text-align: center;
+}
+
 .cover-preview {
   width: 100px;
   height: 150px;
@@ -72,13 +91,13 @@ a {
 }
 
 .nav-dropdown {
-  background-color: #283E47;
+  /*background-color: #283E47;*/
   z-index:20;
 }
 
 .nav {
   height: 50px;
-  background-color: #283E47;
+  /*background-color: #283E47;*/
   padding: 0 20px;
   min-width:100%;
 }
