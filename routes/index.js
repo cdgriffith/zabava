@@ -107,7 +107,7 @@ router.get('/folder/:folder', async (req, res) => {
     res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
 
   } else {
-    let records = await Asset.find({media_type: mediaType, processing: false})
+    let records = await Asset.find({media_type: mediaType, processing: false}).sort('media_name')
     let files = []
     for (let file of records){
       files.push({cover: `/cover/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
@@ -171,6 +171,37 @@ router.get('/video/:id/edit', async (req, res) => {
   res.render('video_editor', {mediaTypes: mediaTypes, ...recordObj})
 })
 
+router.post('/video/:id/edit', async (req, res, next) => {
+  let record = await Asset.findOne({media_id: req.params.id})
+  console.log(req.body)
+  record.media_name = req.body.name
+  record.media_type = req.body.type
+  record.year = parseInt(req.body.year)
+
+  // TODO error dialogs
+  if (!Object.keys(mediaTypes).includes(req.body.type)){
+    return next(Error('invalid media type'))
+  }
+  if (mediaTypes[req.body.type].series){
+    try {
+      record.season = parseInt(req.body.season)
+      record.episode = parseInt(req.body.episode)
+    } catch (err){
+
+    }
+    record.series = req.body.series
+  }
+  record.description = req.body.description
+  let genres = []
+  for (let genre of req.body.genres.split(",")){
+    genres.push(genre.trim())
+  }
+  record.genres = req.body.genres
+
+  await record.save()
+  return res.status(200).redirect(`/video/${req.params.id}/edit`)
+})
+
 
 router.get('/export', async (req, res) => {
   let data = {'assets': [],
@@ -203,19 +234,19 @@ router.get('/export', async (req, res) => {
   return res.end(exported, 'binary')
 })
 
-router.post('/drm', async (req, res) => {
-  console.log(req.body.kids)
-  res.json({
-    "keys":
-        [{
-          "kty":"oct",
-          "k":"tQ0bJVWb6b0KPL6KtZIy_A",
-          "kid":"LwVHf8JLtPrv2GUXFW2v_A"
-        }],
-    'type':"temporary"
-  })
-
-})
+// router.post('/drm', async (req, res) => {
+//   console.log(req.body.kids)
+//   res.json({
+//     "keys":
+//         [{
+//           "kty":"oct",
+//           "k":"tQ0bJVWb6b0KPL6KtZIy_A",
+//           "kid":"LwVHf8JLtPrv2GUXFW2v_A"
+//         }],
+//     'type':"temporary"
+//   })
+//
+// })
 
 
 module.exports = router

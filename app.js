@@ -10,6 +10,7 @@ const indexRouter = require('./routes/index')
 const apiRouter = require('./routes/api')
 const {getToken} = require('./lib/auth')
 
+
 winston.add(new winston.transports.Console({
   format: winston.format.combine(
       winston.format.colorize(),

@@ -12,78 +12,106 @@
     </div>
 
 
-    <form>
+    <form action="/video/<%= media_id %>/edit" method="POST">
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="media-name">Name</label>
-                <input type="text" class="form-control" id="media-name" value="<%= media_name %>">
+                <input type="text" class="form-control" name="name" id="media-name" value="<%= media_name %>">
             </div>
             <div class="form-group col-md-3">
                 <label for="media-type">Type</label>
-                <input type="text" class="form-control" id="media-type" value="<%= media_type %>">
+                <select class="form-control" id="media-type" name="type">
+                    <% for (let t of Object.keys(mediaTypes)) { %>
+                    <option value="<%=t %>" <%= (t === media_type)? 'selected':'' %> ><%= t %></option>
+                    <% } %>
+                </select>
+
             </div>
             <div class="form-group col-md-3">
                 <label for="year">Year</label>
-                <select class="form-control" id="year">
-                    <option value="" <% ('' === year)?'selected':'' %> >Year</option>
-                    <% for (let i of Array.from({length: new Date().getFullYear() - 1898}, (x,i) => i + 1900)){ %>
-                    <option value="<%=i %>" <% (i === year)?'selected':'' %> ><%= i %></option>
+                <select class="form-control" id="year" name="year" >
+
+                    <option value="" <% (!locals.year) ? 'selected':'' %> >Year</option>
+                    <% for (let i of Array.from({length: new Date().getFullYear() - 1898}, (x, i) => i + 1900).reverse()) { %>
+                    <option value="<%=i %>" <%= (!!locals.year && i === year)?'selected':'' %> ><%= i %></option>
                     <% } %>
                 </select>
             </div>
         </div>
 
-
+        <% if (!!locals.series){ %>
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="series">Series</label>
-                <input type="text" class="form-control" id="series" value="<%= series %>">
+                <input type="text" class="form-control" id="series" name="series"  value="<%= series %>">
             </div>
             <div class="form-group col-md-3">
                 <label for="season">Season</label>
-                <select class="form-control" id="season">
+                <select class="form-control" id="season" name="season" >
                     <option value="" <% ('' === season)?'selected':'' %> >Season</option>
                     <% for (let i of Array.from({length: 100}, (x,i) => i + 1)){ %>
-                        <option value="<%=i %>" <% (i === season)?'selected':'' %> ><%= i %></option>
+                        <option value="<%=i %>" <%= (i === season)?'selected':'' %> ><%= i %></option>
                     <% } %>
                 </select>
             </div>
             <div class="form-group col-md-3">
                 <label for="episode">Episode</label>
-                <select class="form-control" id="episode">
+                <select class="form-control" id="episode" name="episode" >
                     <option value=""<% ('' === episode)?'selected':'' %> >Episode</option>
                     <% for (let i of Array.from({length: 100}, (x,i) => i + 1)){ %>
-                    <option value="<%=i %>" <% (i === episode)?'selected':'' %> ><%= i %></option>
+                    <option value="<%=i %>" <%= (i === episode)?'selected':'' %> ><%= i %></option>
                     <% } %>
                 </select>
             </div>
         </div>
+            <% }%>
+
+
         <div class="form-group">
             <label for="genres">Genres (comma separated)</label>
-
-
-        <%=subtitles %>
-        <%for (let sub of subtitles) { %>
-        <div>
-            <span><%= JSON.stringify(sub) %></span>
+            <input type="text" class="form-control" id="genres" name="genres" value="<%= (!!locals.genres)? genres.join(","): '' %>">
         </div>
-        <% } %>
-
-
-        <img class="cover-preview" src="<%= cover %>" />
-
-
 
         <div class="form-group">
-            <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="auto_play_series">
-                <label class="form-check-label" for="auto_play_series">
-                    auto_play_series
-                </label>
-            </div>
+            <label for="description">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="3"><%= (!!locals.description)? description: '' %></textarea>
         </div>
-        <button type="submit" class="btn btn-primary">Sign in</button>
+
+        <a href="/video/<%= media_id %>"><button type="button" class="btn btn-warning">Back</button></a> <button type="submit" class="btn btn-primary">Save</button>
     </form>
+
+
+
+
+    <!---->
+        <!--<div class="form-group">-->
+            <!--<label for="subtitles">Subtitles</label>-->
+            <!--<input type="file" name="subtitles"  class="form-control-file"  >-->
+            <!--<%for (let sub of subtitles) { %>-->
+                <!--<div>-->
+                    <!--<span><%= JSON.stringify(sub) %></span><span class="oi" data-glyph="ban" ></span>-->
+                <!--</div>-->
+            <!--<% } %>-->
+        <!--</div>-->
+
+
+    <!--<form action="/video/<%= media_id %>/edit" method="POST">-->
+        <!--<div class="form-group">-->
+            <!--<label for="cover">Cover image</label>-->
+            <!--<input type="file" name="cover"  class="form-control-file"  >-->
+            <!--<img class="cover-preview"  src="<%= cover %>" />-->
+        <!--</div>-->
+
+
+        <!--<div class="form-group">-->
+            <!--<div class="form-check">-->
+                <!--<input class="form-check-input" type="checkbox" id="auto_play_series" <%= (!!locals.auto_play_series && auto_play_series)?'checked':'' %> >-->
+                <!--<label class="form-check-label" for="auto_play_series">-->
+                    <!--Auto Play Series-->
+                <!--</label>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</form>-->
 
 </div>
 
