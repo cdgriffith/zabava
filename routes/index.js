@@ -109,7 +109,7 @@ router.get('/search/:folder', async(req, res, next) => {
     res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
 
   } else {
-    let records = await Asset.find({media_type: mediaType, processing: false, "$text": {"$search": req.query.q}}, { score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } )
+    let records = await Asset.find({media_type: mediaType, processing: false, media_name: {'$regex' : req.query.q.trim(), '$options' : 'i'}})
 
     let files = []
     for (let file of records){
