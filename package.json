@@ -42,6 +42,7 @@
     "request": "latest",
     "shaka-player": "2.5.0-beta",
     "sharp": "^0.20.8",
+    "tiny-async-pool": "^1.0.1",
     "uuid": "latest",
     "winston": "^3.1.0"
   },

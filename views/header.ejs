@@ -36,8 +36,8 @@
 
             </div>
 
-            <form class="form-inline ml-auto mr-auto" style="margin-top: 10px">
-                <input class="form-control mr-sm-2 header-form "  style="width:300px" type="text" placeholder="Search" aria-label="Search" disabled>
+            <form class="form-inline ml-auto mr-auto" style="margin-top: 10px" method="GET" action="/search/<%= (!!locals.folder)? folder: 'movie' %>">
+                <input class="form-control mr-sm-2 header-form "  style="width:300px" type="text" placeholder="Search" name="q" aria-label="Search" >
                 <button class="btn btn-outline-info my-2 my-sm-0 header-form btn-sm " type="submit">Search</button>
             </form>
 

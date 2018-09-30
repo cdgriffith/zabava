@@ -89,6 +89,36 @@ router.get('/cover/:id', cache('3 days'),  async (req, res) => {
 
 
 // Views
+router.get('/search/:folder', async(req, res, next) => {
+  let mediaType = req.params.folder.trim()
+  if (!Object.keys(mediaTypes).includes(mediaType)){
+    return next(Error('Not a supported media type'))
+  }
+  let media = mediaTypes[mediaType]
+
+  if (media.series){
+    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType, processing: false}}, {'$group': {_id: '$series'}}])
+    let items = []
+    for (let series of seriesRaw){
+      series = series._id
+      if (series.toLowerCase().search(req.query.q.toLowerCase()) >= 0){
+        let record = await Asset.findOne({media_type: mediaType, series: series, processing: false}).sort({season: -1})
+        items.push({cover: `/cover/${record.media_id}`, series: series})
+      }
+    }
+    res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
+
+  } else {
+    let records = await Asset.find({media_type: mediaType, processing: false, "$text": {"$search": req.query.q}}, { score: { $meta: "textScore" } }).sort( { score: { $meta: "textScore" } } )
+
+    let files = []
+    for (let file of records){
+      files.push({cover: `/cover/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
+    }
+    res.render('folder_viewer', {series: false, folder: mediaType, items: files, mediaTypes: mediaTypes})
+  }
+})
+
 
 router.get('/folder/:folder', async (req, res, next) => {
   let mediaType = req.params.folder.trim()
