@@ -109,7 +109,7 @@ router.get('/search/:folder', async(req, res, next) => {
     res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
 
   } else {
-    let records = await Asset.find({media_type: mediaType, processing: false, media_name: {'$regex' : req.query.q.trim(), '$options' : 'i'}})
+    let records = await Asset.find({media_type: mediaType, processing: false, media_name: {'$regex' : req.query.q.trim(), '$options' : 'i'}}).limit(36)
 
     let files = []
     for (let file of records){
@@ -122,6 +122,7 @@ router.get('/search/:folder', async(req, res, next) => {
 
 router.get('/folder/:folder', async (req, res, next) => {
   let mediaType = req.params.folder.trim()
+  let start = parseInt(req.query.start || 0)
   if (!Object.keys(mediaTypes).includes(mediaType)){
     return next(Error('Not a supported media type'))
   }
@@ -137,12 +138,13 @@ router.get('/folder/:folder', async (req, res, next) => {
     res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
 
   } else {
-    let records = await Asset.find({media_type: mediaType, processing: false}).sort('media_name')
+    let total = await Asset.find({media_type: mediaType, processing: false}).count()
+    let records = await Asset.find({media_type: mediaType, processing: false}).sort('media_name').skip(start).limit(36)
     let files = []
     for (let file of records){
       files.push({cover: `/cover/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
     }
-    res.render('folder_viewer', {series: false, folder: mediaType, items: files, mediaTypes: mediaTypes})
+    res.render('folder_viewer', {series: false, folder: mediaType, items: files, mediaTypes: mediaTypes, start: start, total: total})
   }
 })
 
@@ -203,10 +205,12 @@ router.get('/video/:id/edit', async (req, res) => {
 
 router.post('/video/:id/edit', async (req, res, next) => {
   let record = await Asset.findOne({media_id: req.params.id})
-  console.log(req.body)
   record.media_name = req.body.name
   record.media_type = req.body.type
-  record.year = parseInt(req.body.year)
+  try {
+    record.year = parseInt(req.body.year)
+  } catch (err){}
+
 
   // TODO error dialogs
   if (!Object.keys(mediaTypes).includes(req.body.type)){
