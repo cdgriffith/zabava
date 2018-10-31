@@ -1,7 +1,7 @@
 <% include header.ejs %>
 
 <div class="container">
-    <div style="padding: 0; z-index:10; margin: 20px 0 10px 0">
+    <div style="padding: 0; z-index:10; margin: 20px 0 10px 0" id="videoBox">
         <video id="video" style="max-width: 100%; background-color: black" width="100%" controls autoplay>
             <% for (let subs of subtitles || []) { %>
                 <track label="English" kind="subtitles" srclang="<%= subs.language %>"
@@ -53,7 +53,7 @@
 
 <!--<script type="application/javascript" src="/javascript/hnl.mobileConsole.js"></script>-->
 <script type="application/javascript" src="/javascript/jquery.min.js"></script>
-<script type="application/javascript" src="/javascript/shaka-player.compiled.js"></script>
+<script type="application/javascript" src="/javascript/shaka-player.compiled.debug.js"></script>
 <script type="application/javascript" src="/javascript/iso-639-1.js"></script>
 
 <script>
@@ -86,7 +86,7 @@
           preferredAudioLanguage: "<%= default_language %>",
 
           streaming: {
-            bufferingGoal: 240,
+            bufferingGoal: 120,
             rebufferingGoal: 0,
             ignoreTextStreamFailures: true
           }
@@ -96,6 +96,7 @@
 
     player.addEventListener('error', onErrorEvent)
     video.addEventListener('ended', onEnded) // NOT the player
+    video.addEventListener('pause', onPause)
 
     player.load(manifestUri).then(function () {
       try {
@@ -149,6 +150,10 @@
     player.selectVariantTrack(selector, true)
   }
 
+  function onPause(event){
+    console.log(event.timeStamp)
+  }
+
 
   function onEnded(event) {
     // autoplay next if needed
@@ -158,15 +163,17 @@
   function onErrorEvent(event) {
     // Extract the shaka.util.Error object from the event.
     console.log(event)
-    console.log(JSON.stringify(event))
     onError(event.detail)
   }
 
   function onError(error) {
     // Log the error.
     // TODO print this on page
+
     console.log(`Error ${error.code} - object: ${JSON.stringify(error)}`)
     console.error('Error code', error.code, 'object', error)
+    let videoBox = document.getElementById('videoBox')
+    videoBox.innerHTML = `<h3>Error</h3><p>${error.message}</p>`
   }
 
   document.addEventListener('DOMContentLoaded', initApp)

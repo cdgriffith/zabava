@@ -41,7 +41,7 @@
     "prettysize": "latest",
     "readline-sync": "^1.4.9",
     "request": "latest",
-    "shaka-player": "2.5.0-beta",
+    "shaka-player": "^2.5.0-beta",
     "sharp": "^0.20.8",
     "tiny-async-pool": "^1.0.1",
     "uuid": "latest",
