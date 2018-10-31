@@ -1,6 +1,7 @@
 require('dotenv').config()
 const createError = require('http-errors')
 const express = require('express')
+require('express-async-errors')
 const path = require('path')
 const cookieParser = require('cookie-parser')
 const morgan = require('morgan')
@@ -42,6 +43,7 @@ app.use(jwt({
   getToken: getToken
 }).unless({path: ['/']}))
 
+
 app.use('/', indexRouter)
 app.use('/api', apiRouter)
 
@@ -52,6 +54,10 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
+  if(err.status === 401) {
+    res.redirect('/')
+  }
+
   // set locals, only providing error in development
 
   if (err.status === 401){
@@ -62,6 +68,8 @@ app.use(function (err, req, res, next) {
   if (err.status === 404){
     return res.status(404).render('not_found')
   }
+
+  winston.log('error', `Error for ${req.originalUrl} - ${err}`)
 
   res.locals.message = err.message
   res.locals.error = req.app.get('env') === 'development' ? err : {}

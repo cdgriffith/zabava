@@ -102,7 +102,7 @@ router.get('/search/:folder', async(req, res, next) => {
     for (let series of seriesRaw){
       series = series._id
       if (series.toLowerCase().search(req.query.q.toLowerCase()) >= 0){
-        let record = await Asset.findOne({media_type: mediaType, series: series, processing: false}).sort({season: -1})
+        let record = await Asset.findOne({media_type: mediaType, series: series, processing: false}).sort({season: 1})
         items.push({cover: `/cover/${record.media_id}`, series: series})
       }
     }
@@ -132,7 +132,7 @@ router.get('/folder/:folder', async (req, res, next) => {
     let items = []
     for (let series of seriesRaw){
       series = series._id
-      let record = await Asset.findOne({media_type: mediaType, series: series, processing: false}).sort({season: -1})
+      let record = await Asset.findOne({media_type: mediaType, series: series, processing: false}).sort({season: 1})
       items.push({cover: `/cover/${record.media_id}`, series: series})
     }
     res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
@@ -155,13 +155,17 @@ router.get('/folder/:folder/:series', async (req, res, next) => {
   }
   let media = mediaTypes[mediaType]
 
-  let seasons = await Asset.aggregate([{'$match': {media_type: mediaType, series: req.params.series.trim(), processing: false}}, {'$group': {_id: '$season'}}])
+  let seasons = await Asset.aggregate([{'$match': {media_type: mediaType, series: req.params.series.trim(), processing: false}}, {'$group': {_id: '$season'}}, {'$sort': {'season': 1}}])
   let files = []
   for (let season of seasons){
     season = season._id
-    let record = await Asset.findOne({media_type: req.params.folder.trim(), series: req.params.series.trim(), season: season, processing: false}).sort({episode: -1})
+    let record = await Asset.findOne({media_type: req.params.folder.trim(), series: req.params.series.trim(), season: season, processing: false}).sort({episode: 1})
     files.push({cover: `/cover/${record.media_id}`, season: season})
   }
+  files.sort(function(a, b){
+    return a.season > b.season;
+  });
+
   res.render('series_viewer', {series: req.params.series, items: files, mediaTypes: mediaTypes, folder: mediaType})
 })
 
@@ -207,10 +211,9 @@ router.post('/video/:id/edit', async (req, res, next) => {
   let record = await Asset.findOne({media_id: req.params.id})
   record.media_name = req.body.name
   record.media_type = req.body.type
-  try {
+  if (!isNaN(parseInt(req.body.year))){
     record.year = parseInt(req.body.year)
-  } catch (err){}
-
+  }
 
   // TODO error dialogs
   if (!Object.keys(mediaTypes).includes(req.body.type)){
