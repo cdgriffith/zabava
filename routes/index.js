@@ -5,16 +5,30 @@ const {getProvider} = require('../lib/storage')
 const request = require('request')
 const Asset = require('../lib/models/asset')
 const User = require('../lib/models/user')
-const {decrypt} = require('../lib/encryption')
+const {encrypt, decrypt} = require('../lib/encryption')
 const {log} = require('winston')
 const prettySize = require('prettysize')
 const {mediaTypes} = require('../lib/media')
 const Minizip = require('minizip-asm.js')
 const cache = require('apicache').middleware
-
+const uuid = require('uuid')
+const sharp = require('sharp')
+const crypto = require('crypto')
+const path = require('path')
+const fs = require('fs-extra')
 
 const provider = getProvider()
 const storage = new provider()
+
+
+const generateId = async (media = false) => {
+  let newId = uuid.v4().replace(/-/g, '')
+  if (media && await Asset.findOne({media_id: newId})){
+    return await generateId()
+  }
+  return newId
+}
+
 
 router.get('/', async function (req, res) {
   try {
@@ -97,7 +111,11 @@ router.get('/search/:folder', async(req, res, next) => {
   let media = mediaTypes[mediaType]
 
   if (media.series){
-    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType, processing: false}}, {'$group': {_id: '$series'}}])
+    let seriesRaw = await Asset.aggregate(
+        [
+        {'$match': {media_type: mediaType, processing: false}},
+      {'$group': {_id: '$series'}}
+      ])
     let items = []
     for (let series of seriesRaw){
       series = series._id
@@ -109,7 +127,7 @@ router.get('/search/:folder', async(req, res, next) => {
     res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
 
   } else {
-    let records = await Asset.find({media_type: mediaType, processing: false, media_name: {'$regex' : req.query.q.trim(), '$options' : 'i'}}).limit(36)
+    let records = await Asset.find({media_type: mediaType, processing: false, media_name: {'$regex' : req.query.q.trim(), '$options' : 'i'}}).limit(35)
 
     let files = []
     for (let file of records){
@@ -128,7 +146,7 @@ router.get('/folder/:folder', async (req, res, next) => {
   }
   let media = mediaTypes[mediaType]
   if (media.series){
-    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType, processing: false}}, {'$group': {_id: '$series'}}])
+    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType, processing: false}}, {'$group': {_id: '$series'}}, {'$sort': {'season': 1}}])
     let items = []
     for (let series of seriesRaw){
       series = series._id
@@ -139,7 +157,7 @@ router.get('/folder/:folder', async (req, res, next) => {
 
   } else {
     let total = await Asset.find({media_type: mediaType, processing: false}).count()
-    let records = await Asset.find({media_type: mediaType, processing: false}).sort('media_name').skip(start).limit(36)
+    let records = await Asset.find({media_type: mediaType, processing: false}).sort('media_name').skip(start).limit(35)
     let files = []
     for (let file of records){
       files.push({cover: `/cover/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
@@ -162,10 +180,7 @@ router.get('/folder/:folder/:series', async (req, res, next) => {
     let record = await Asset.findOne({media_type: req.params.folder.trim(), series: req.params.series.trim(), season: season, processing: false}).sort({episode: 1})
     files.push({cover: `/cover/${record.media_id}`, season: season})
   }
-  files.sort(function(a, b){
-    return a.season > b.season;
-  });
-
+  files.sort((a, b) => a.season - b.season)
   res.render('series_viewer', {series: req.params.series, items: files, mediaTypes: mediaTypes, folder: mediaType})
 })
 
@@ -235,8 +250,48 @@ router.post('/video/:id/edit', async (req, res, next) => {
   }
   record.genres = req.body.genres
 
+  if (req.files.cover) {
+    // Make sure image is the right size
+    let imageBuffer = req.files.cover.data
+    let metadata = sharp(imageBuffer).metadata()
+    if (metadata.width !== 300) {
+      log('info', 'Resizing cover file')
+      imageBuffer = await sharp(imageBuffer).resize(300, 450).toBuffer()
+    }
+
+    // Encrypt Image
+    log('info', 'encrypting image')
+    let coverKey = crypto.randomBytes(16).toString('hex')
+    let encryptedImage = await encrypt(imageBuffer, coverKey)
+    let coverId = await generateId()
+    let remoteCoverPath = `${record.media_id}/files/${coverId}`
+    await fs.ensureDir(process.env.UPLOAD_DIR)
+    let tmpCover = path.join(process.env.UPLOAD_DIR, coverId)
+    await fs.writeFile(tmpCover, encryptedImage.encrypted)
+    delete encryptedImage.encrypted
+
+    // Upload cover file
+    log('info', 'uploading cover file')
+    try {
+      await storage.uploadFile(tmpCover, remoteCoverPath)
+    } finally {
+        await fs.remove(tmpCover)
+    }
+    // TODO delete old cover encryption info
+    record.encrypted_files.push({key: coverKey, file: remoteCoverPath, ...encryptedImage})
+    record.cover = remoteCoverPath
+
+  }
+
+
+
   await record.save()
   return res.status(200).redirect(`/video/${req.params.id}/edit`)
+})
+
+router.post('/series', async (req, res) => {
+
+
 })
 
 

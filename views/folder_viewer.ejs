@@ -28,15 +28,15 @@
             <% if (start >= 1) { %>
                 <a href="/folder/<%= folder %>?start=0">⇚</a>
             -
-                <a href="/folder/<%= folder %>?start=<%= (start > 36) ? start - 36 : 0 %>">⇦ Previous</a>
+                <a href="/folder/<%= folder %>?start=<%= (start > 35) ? start - 35 : 0 %>">⇦ Previous</a>
             <% } %>
             -
-             <%= start %> through <%= (start + 36 > total) ? total : start + 36 %> of <%= total %>
+             <%= start %> through <%= (start + 35 > total) ? total : start + 35 %> of <%= total %>
             -
-            <% if (start + 36 < total) { %>
-                <a href="/folder/<%= folder %>?start=<%= start + 36 %>">Next ⇨</a>
+            <% if (start + 35 < total) { %>
+                <a href="/folder/<%= folder %>?start=<%= start + 35 %>">Next ⇨</a>
             -
-                    <a href="/folder/<%= folder %>?start=<%= total - 36 %>">⇛</a>
+                    <a href="/folder/<%= folder %>?start=<%= total - 35 %>">⇛</a>
             <% } %>
 
         </div>
