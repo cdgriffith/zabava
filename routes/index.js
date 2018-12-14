@@ -85,7 +85,7 @@ router.get('/asset/:id/*', async (req, res) => {
   }
 })
 
-router.get('/cover/:id', cache('3 days'),  async (req, res) => {
+router.get('/cover/:id', cache('1 days'),  async (req, res) => {
   let record = await Asset.findOne({media_id: req.params.id})
   let data = await getEncryptedAsset(req.params.id, record.cover)
   if (!data){
@@ -146,22 +146,26 @@ router.get('/folder/:folder', async (req, res, next) => {
   }
   let media = mediaTypes[mediaType]
   if (media.series){
-    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType, processing: false}}, {'$group': {_id: '$series'}}, {'$sort': {'season': 1}}])
+    let seriesRaw = await Asset.aggregate([{'$match': {media_type: mediaType, processing: false}}, {'$group': {_id: '$series'}}, {'$sort': {'series': 1}}])
     let items = []
     for (let series of seriesRaw){
       series = series._id
-      let record = await Asset.findOne({media_type: mediaType, series: series, processing: false}).sort({season: 1})
+      let record = await Asset.findOne({media_type: mediaType, series: series, processing: false}).sort({series: 1})
       items.push({cover: `/cover/${record.media_id}`, series: series})
     }
     res.render('folder_viewer', {series: true, folder: mediaType, items: items, mediaTypes: mediaTypes })
 
   } else {
     let total = await Asset.find({media_type: mediaType, processing: false}).count()
-    let records = await Asset.find({media_type: mediaType, processing: false}).sort('media_name').skip(start).limit(35)
+    let records = await Asset.find({media_type: mediaType, processing: false}).sort({'media_name': 1}).skip(start).limit(35)
     let files = []
     for (let file of records){
       files.push({cover: `/cover/${file.media_id}`, media_id: file.media_id, media_name: file.media_name})
     }
+    // files.sort(function (a, b){
+    //   return ('' + a.media_name.toLowerCase()).localeCompare(b.media_name.toLowerCase());
+    // })
+
     res.render('folder_viewer', {series: false, folder: mediaType, items: files, mediaTypes: mediaTypes, start: start, total: total})
   }
 })
