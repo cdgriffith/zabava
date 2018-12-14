@@ -13,22 +13,46 @@ Uses Encrypted MPEG-DASH videos, and even cover images are stored in AES-256.
 ## CLI 
 
 ```
-$ node lib\cli.js
-
-Usage: cli [options] [command]
+$ zabava
 
 Zabava - Manage media files
 
 Options:
 
   -v, --version                 output the version number
+  --verbose
   -h, --help                    output usage information
 
 Commands:
 
   upload [options] <movieFile>  Upload, convert, and auto encrypt new media file
-  delete <mediaName>            Remove an item
+  delete <mediaId>              Remove an item
   list                          View list of movies
+  resume [options]
+```
+
+
+```
+$ zabava upload --help
+
+  Usage: upload [options] <movieFile>
+  
+  Upload, convert, and auto encrypt new media file
+  
+  Options:
+  
+    -c, --cover [cover]                      Cover file
+    -n, --movie-name [movie]                 Movie name (will use filename if omitted)
+    -s, --subtitles [subtitles]              File for subtitles (srt format)
+    -l, --subtitles-language [sub_language]  defaults to eng
+    --do-not-delete                          Leave all build files
+    -t, --media-type [media type]            movie, tv_show, anime, xxx
+    --series [series]                        name of series, must provide episode number
+    --season [season]                        Season number
+    --episode [number]                       Episode number
+    -a, --auto-play                          Autoplay the next item in the series
+    -y, --yes                                Yes to all
+    -h, --help                               output usage information
 
 ```
 
@@ -73,27 +97,5 @@ Data will be stored on remote server like:
             
 Info about the files will be stored in a locally encrypted Mongo Database
 
-
-    media_id: uuid
-    media_name: string
-    media_type: string  # (video / tv show/ audio?)
-    series: string
-    seasion: number
-    auto_play_series: boolean
-    episode: number
-    encryption: {key_id: secret_key} #diff for audio?
-    genres: []
-    year: number
-    date_added: date
-    times_watched: number
-    
-    
-     
-    
-    
-    
-# FFMPEG 
-
-http://oss.netfarm.it/mplayer/#libfdk-aac
 
 

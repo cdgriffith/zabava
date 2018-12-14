@@ -42,7 +42,8 @@ router.get('/', async function (req, res) {
 
 router.post('/',  async (req, res) => {
   let password = req.body.password
-  if (password === 'a12sd34f') {
+  console.log(process.env.ADMIN_PASSWORD)
+  if (password === process.env.ADMIN_PASSWORD) {
     res.cookie('token', await generateToken('test'), {
       maxAge: 24 * 60 * 60 * 1000,
       httpOnly: true,
