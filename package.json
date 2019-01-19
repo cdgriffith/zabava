@@ -1,0 +1,65 @@
+{
+  "name": "zabava",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node ./bin/www",
+    "build": "gulp"
+  },
+  "bin": {
+    "zabava": "./lib/zabava.js"
+  },
+  "dependencies": {
+    "apicache": "^1.2.3",
+    "axios": "latest",
+    "body-parser": "latest",
+    "bootstrap": "^4.1.3",
+    "commander": "latest",
+    "cookie-parser": "~1.4.3",
+    "debug": "~2.6.9",
+    "dotenv": "^6.0.0",
+    "ejs": "^2.6.1",
+    "express": "~4.16.0",
+    "express-async-errors": "^3.1.1",
+    "express-fileupload": "^1.0.0",
+    "express-jwt": "^5.3.1",
+    "follow-redirects": "latest",
+    "fs-extra": "^7.0.0",
+    "get-folder-size": "^2.0.0",
+    "hash-files": "^1.1.1",
+    "http-errors": "~1.6.2",
+    "iso-639-1": "^2.0.3",
+    "jade": "~1.11.0",
+    "jquery": "^3.3.1",
+    "jsonwebtoken": "latest",
+    "mime-types": "latest",
+    "minizip-asm.js": "^1.0.10",
+    "mongoose": "^5.3.4",
+    "mongoose-encryption": "^2.0.1",
+    "morgan": "~1.9.0",
+    "omdb-js": "^1.0.0",
+    "open-iconic": "^1.1.1",
+    "popper": "^1.0.1",
+    "prettysize": "latest",
+    "readline-sync": "^1.4.9",
+    "request": "latest",
+    "serve-favicon": "^2.5.0",
+    "shaka-player": "^2.5.0-beta",
+    "sharp": "^0.20.8",
+    "tiny-async-pool": "^1.0.1",
+    "uuid": "latest",
+    "winston": "^3.1.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-rename": "^1.4.0",
+    "mocha": "^5.2.0"
+  },
+  "homepage": "https://github.com/cdgriffith/zabava",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cdgriffith/zabava.git"
+  },
+  "keywords": [],
+  "author": "Chris Griffith",
+  "license": "MIT"
+}

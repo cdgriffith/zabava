@@ -1,0 +1,48 @@
+<% include header.ejs %>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <% for(let item of items) { %>
+            <div class="video-select">
+                <% if (series) { %>
+                    <a href="/folder/<%= folder %>/<%= item.series %>" title="<%= item.series %>">
+                        <img class="cover" src="<%= item.cover %>"/>
+                    </a>
+                    <h3><%= item.series %></h3>
+                <% } else { %>
+                    <a href="/video/<%= item.media_id %>" title="<%= item.media_name %>">
+                        <img class="cover"src="<%= item.cover %>"/>
+                    </a>
+                    <h3><%= item.media_name %></h3>
+                <% } %>
+
+            </div>
+        <% } %>
+
+    </div>
+    <% if (typeof start != "undefined" ){ %>
+    <div class="row" style="margin-top: 10px">
+        <div class="col-12" style="text-align: center; font-size: 20px;">
+
+            <% if (start >= 1) { %>
+                <a href="/folder/<%= folder %>?start=0">⇚</a>
+            -
+                <a href="/folder/<%= folder %>?start=<%= (start > 35) ? start - 35 : 0 %>">⇦ Previous</a>
+            <% } %>
+            -
+             <%= start %> through <%= (start + 35 > total) ? total : start + 35 %> of <%= total %>
+            -
+            <% if (start + 35 < total) { %>
+                <a href="/folder/<%= folder %>?start=<%= start + 35 %>">Next ⇨</a>
+            -
+                    <a href="/folder/<%= folder %>?start=<%= total - 35 %>">⇛</a>
+            <% } %>
+
+        </div>
+    </div>
+    <% } %>
+</div>
+
+
+<% include footer.ejs %>

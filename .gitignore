@@ -59,3 +59,15 @@ typings/
 
 # next.js build output
 .next
+
+.idea/
+
+public/*/video*
+public/*/bootstrap*
+public/*/jquery*
+public/*/shaka-player.compiled.debug*
+public/*/iso-*
+public/*/open-iconic*
+public/fonts/
+output/
+test.html

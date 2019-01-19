@@ -1,0 +1,14 @@
+<% include header.ejs %>
+
+
+<div class="container-fluid">
+    <h1> <%= series %> - Season <%= season %></h1>
+        <% for(let item of items) {%>
+            <ul>
+                <li><a href="/video/<%= item.media_id %>" title="<%= item.media_name %>"  >Episode <%= item.episode %></a></li>
+            </ul>
+        <% } %>
+</div>
+
+
+<% include footer.ejs %>

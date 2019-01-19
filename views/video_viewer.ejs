@@ -1,0 +1,184 @@
+<% include header.ejs %>
+
+<div class="container">
+    <div style="padding: 0; z-index:10; margin: 20px 0 10px 0" id="videoBox">
+        <video id="video" style="max-width: 100%; background-color: black" width="100%" controls autoplay>
+            <% for (let subs of subtitles || []) { %>
+                <track label="English" kind="subtitles" srclang="<%= subs.language %>"
+                       src="/asset/<%= subs.file %>?stream=false&type=text/plain">
+            <% } %>
+        </video>
+    </div>
+    <div class="row" style="margin: 0;">
+
+        <div style="width:20px; height: 20px"><a href="/video/<%= media_id%>/edit"><span  class="oi oi-pencil"></span></a></div>
+        <% if (!!locals.series) { %>
+            <h3> <%= series %>: Season <%= season %>, Episode <%= episode %> (<%= media_name %>) </h3>
+
+        <% } else { %>
+            <h3> <%= media_name %></h3>
+        <% } %>
+
+            <div id="track-select" class="btn-group ml-auto" data-toggle="buttons" onchange=" setTrack()">
+            </div>
+    </div>
+
+
+
+    <div class="row" style="margin: 0;">
+        <div class="col-8" style="padding: 0; z-index:10;">
+            <p><%= (!!locals.description) ? description : ''  %></p>
+            <!--<table class="table">-->
+                <!--<tbody>-->
+                <!--<tr>-->
+                    <!--<th scope="row">Size</th>-->
+                    <!--<td><%= size || 'unknown' %> </td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th scope="row">Year Released</th>-->
+                    <!--<td><%= (!!locals.year) ? year : 'unknown' %> </td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<th scope="row">Times watched</th>-->
+                    <!--<td><%= (!!locals.times_watched) ? times_watched : '0' %> </td>-->
+                <!--</tr>-->
+                <!--</tbody>-->
+            <!--</table>-->
+        </div>
+        <div class="col-4">
+            Other videos:
+        </div>
+    </div>
+</div>
+
+<!--<script type="application/javascript" src="/javascript/hnl.mobileConsole.js"></script>-->
+<script type="application/javascript" src="/javascript/jquery.min.js"></script>
+<script type="application/javascript" src="/javascript/shaka-player.compiled.debug.js"></script>
+<script type="application/javascript" src="/javascript/iso-639-1.js"></script>
+
+<script>
+
+  let manifestUri = '/asset/<%= media_id %>/stream.mpd?stream=true'
+  let player
+  let availableTracks = []
+
+  function initApp() {
+    shaka.polyfill.installAll()
+
+    if (shaka.Player.isBrowserSupported()) {
+      initPlayer()
+    } else {
+      alert('This browser does not support MPEG-DASH videos')
+      console.error('Browser not supported!')
+    }
+  }
+
+  function initPlayer() {
+    let video = document.getElementById('video')
+    player = new shaka.Player(video)
+    player.configure({
+          drm: {
+            clearKeys: {
+              '<%= encryption.key_id %>': '<%= encryption.key %>'
+            }
+          },
+          abr: {enabled: false},
+          preferredAudioLanguage: "<%= default_language %>",
+
+          streaming: {
+            bufferingGoal: 120,
+            rebufferingGoal: 0,
+            ignoreTextStreamFailures: true
+          }
+        }
+    )
+    window.player = player
+
+    player.addEventListener('error', onErrorEvent)
+    video.addEventListener('ended', onEnded) // NOT the player
+    video.addEventListener('pause', onPause)
+
+    player.load(manifestUri).then(function () {
+      try {
+        availableTracks = player.getVariantTracks()
+        if (availableTracks.length > 1) {
+          for (let [index, track] of availableTracks.entries()) {
+            if (track.width) {
+              let audioType = 'Unknown'
+              if (!track.channelsCount) {
+                console.error(`Track does not have channels: ${track}`)
+              } else if (track.channelsCount > 2) {
+                audioType = 'Surround'
+              } else if (track.channelsCount === 2) {
+                audioType = 'Stereo'
+              } else (
+                  audioType = 'Mono'
+              )
+
+              let audioLanguage = ""
+              if (track.language) {
+                audioLanguage = `${track.language} - `
+                try {
+                  audioLanguage = `${ISO6391.getName(track.language)} - `
+                } catch (err) {
+                  console.error(`Dumbass coder missed this one: ${err}`)
+                }
+              }
+
+              let buttonHtml = `<label class="btn btn-secondary ${index === 0 ? 'active' : ''}"> ` +
+                  `<input type="radio" name="trackOption" value="${index}" hidden  > ${audioLanguage}${audioType} ` +
+                  `</label>`
+
+
+              $('#track-select').append(buttonHtml)
+            }
+          }
+        }
+
+      } catch (err) {
+        console.error(`No idea why this errored: ${err}`)
+      }
+    }).catch(onError)
+  }
+
+  function setTrack() {
+    player.configure({abr: {enabled: false}})
+    let trackNumber = parseInt($('input[name=trackOption]:checked').val())
+    console.log(trackNumber)
+    let selector = availableTracks[trackNumber]
+    console.log(selector)
+    player.selectVariantTrack(selector, true)
+  }
+
+  function onPause(event){
+    console.log(event.timeStamp)
+  }
+
+
+  function onEnded(event) {
+    // autoplay next if needed
+    console.log('Ended')
+  }
+
+  function onErrorEvent(event) {
+    // Extract the shaka.util.Error object from the event.
+    console.log(event)
+    onError(event.detail)
+  }
+
+  function onError(error) {
+    // Log the error.
+    // TODO print this on page
+
+    console.log(`Error ${error.code} - object: ${JSON.stringify(error)}`)
+    console.error('Error code', error.code, 'object', error)
+    let videoBox = document.getElementById('videoBox')
+    videoBox.innerHTML = `<h3>Error</h3><p>${error.message}</p>`
+  }
+
+  document.addEventListener('DOMContentLoaded', initApp)
+
+</script>
+
+<% include footer.ejs %>
+

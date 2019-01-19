@@ -1,0 +1,47 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="/javascript/jquery.slim.min.js"></script>
+    <script src="/javascript/bootstrap.bundle.js"></script>
+
+    <title><%= (!!locals.media_name) ? `Zabava - ${media_name}`: 'Zabava' %></title>
+
+    <link href="/stylesheets/bootstrap.min.css" rel="stylesheet">
+    <link href="/stylesheets/style.css" rel="stylesheet">
+    <link href="/stylesheets/open-iconic-bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark nav">
+        <a class="navbar-brand" href="#" id="dropdownMenuButton" data-toggle="dropdown" >ZABAVA</a>
+
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <% for (let media of Object.keys(mediaTypes)) { %>
+                <a class="dropdown-item" href="/folder/<%= media %>" >
+                    <%= mediaTypes[media].label %>
+                </a>
+            <% }%>
+        </div>
+
+            <form class="form-inline" style="margin:10px auto" method="GET" action="/search/<%= (!!locals.folder)? folder: 'movie' %>">
+                <input class="form-control mr-sm-2 header-form" type="text" style="min-width: 20vw; max-width: 32vw" placeholder="Search" name="q" aria-label="Search" />
+                <button class="btn btn-outline-info my-2 my-sm-0 header-form btn-sm " type="submit">Search</button>
+            </form>
+
+
+        <ul class="navbar-nav">
+            <li class="nav-item active">
+                <a class="nav-link" href="/logout">Log Out</a>
+            </li>
+        </ul>
+
+
+    </nav>
+</header>
+
+<main>
