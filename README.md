@@ -1,12 +1,17 @@
 # Zabava
 
-**Very messy work in progress! Still flushing out ideas!**
-
-
 Very private home media player for the cloud. 
+
 Uses Encrypted MPEG-DASH videos, and even cover images are stored in AES-256.
 
+**I AM NO LONGER USING OR UPDATING THIS CODE** 
+
+I am willing to accept PRs into it, but I have no plans on support it in any way shape or form. This software is AS IS. 
+
 ## Supported Storage Providers 
+
+Zabava has been desgined to have an agnostic storage provider backend for others to be dropped in as supported. 
+Currently only the following have been written:
 
 * Backblaze B2
 
@@ -68,34 +73,9 @@ Navigate to localhost:3000
 
 ## Design
 
-All files are encrypted. 
-
-Covers are AES256 JPG images
-Media is MPEG-DASH Encrypted (AES128)
-
-Data will be stored on remote server like: 
-
-    bucket/
-        covers/ 
-            0000001
-            0000002
-            ...
-        mpeg_dash/
-            0000001/
-                stream.mpd
-                audio/<lang>/<type>/
-                    init.mp4
-                    seg-1.m4s 
-                    ...
-                video/<type>/
-                    init.mp4
-                    seg-1.m4s 
-                    ...
-            0000002/
-            ...
-            
-            
-Info about the files will be stored in a locally encrypted Mongo Database
+* Covers are AES256 JPG images
+* Media is MPEG-DASH Encrypted (AES128)
+* Info about the files will be stored in a locally encrypted Mongo Database
 
 
 
